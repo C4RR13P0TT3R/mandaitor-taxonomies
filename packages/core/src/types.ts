@@ -1,7 +1,7 @@
 // @mandaitor/taxonomy-core — Base types for all industry taxonomies
 //
 // These types define the contract that every community taxonomy must implement.
-// They are intentionally kept compatible with @mandata/taxonomy-core from the
+// They are intentionally kept compatible with @mandaitor/taxonomy-core from the
 // main mandaitor repository, but published independently so that taxonomy
 // contributors do not need access to the full infrastructure monorepo.
 

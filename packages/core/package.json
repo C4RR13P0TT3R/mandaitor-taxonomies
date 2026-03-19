@@ -26,5 +26,8 @@
     "typescript": "^5.6.0",
     "vitest": "^2.0.0"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "license": "Apache-2.0"
 }
