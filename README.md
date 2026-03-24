@@ -15,9 +15,9 @@ A Mandaitor taxonomy is a structured definition of **what an AI agent is allowed
 
 ## Available Taxonomies
 
-| Taxonomy | Version | Actions | Templates | Status |
-|---|---|---|---|---|
-| [construction](./taxonomies/construction/) | 1.0.0 | 14 | 7 | Reference |
+| Taxonomy | Version | Actions | Resources | Constraints | Templates | Status |
+|---|---|---|---|---|---|---|
+| [construction](./taxonomies/construction/) | 1.0.0 | 14 | 7 | 4 | 7 | Reference |
 
 ## Contributing a New Taxonomy
 
@@ -137,7 +137,6 @@ mandaitor-taxonomies/
 ├── packages/
 │   └── core/              # @mandaitor/taxonomy-core — types, validator, registry
 ├── taxonomies/
-│   ├── _template/         # Scaffold template (do not modify)
 │   └── construction/      # @mandaitor/taxonomy-construction — reference taxonomy
 ├── scripts/
 │   ├── scaffold-taxonomy.mjs   # Scaffolding script
