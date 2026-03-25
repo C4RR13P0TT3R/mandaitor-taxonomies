@@ -65,6 +65,10 @@ writeFileSync(
         vitest: "^2.0.0",
       },
       keywords: ["mandaitor", "taxonomy", taxonomyId, "delegation", "agentic-ai"],
+      publishConfig: {
+        access: "public",
+        registry: "https://registry.npmjs.org",
+      },
       license: "Apache-2.0",
     },
     null,
