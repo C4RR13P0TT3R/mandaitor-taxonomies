@@ -1,0 +1,11 @@
+# Default owner for everything
+* @C4RR13P0TT3R
+
+# CI/CD workflows
+/.github/ @C4RR13P0TT3R
+
+# Core taxonomy framework
+/packages/core/ @C4RR13P0TT3R
+
+# Scaffold tooling
+/scripts/ @C4RR13P0TT3R
