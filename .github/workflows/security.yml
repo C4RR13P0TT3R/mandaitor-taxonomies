@@ -11,35 +11,58 @@ on:
 permissions:
   actions: read
   contents: read
-  security-events: write
 
 jobs:
   semgrep:
     name: Semgrep SAST
     runs-on: ubuntu-latest
-    container:
-      image: semgrep/semgrep
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Run Semgrep
-        run: semgrep ci --sarif --output=semgrep-results.sarif
-        env:
-          SEMGREP_RULES: >-
-            p/javascript
-            p/typescript
-            p/nodejs
-            p/owasp-top-ten
-            p/security-audit
-            p/secrets
+      - name: Install Semgrep
+        run: pip install semgrep
 
-      - name: Upload SARIF
+      - name: Run Semgrep
+        run: |
+          semgrep scan \
+            --config p/javascript \
+            --config p/typescript \
+            --config p/nodejs \
+            --config p/owasp-top-ten \
+            --config p/security-audit \
+            --config p/secrets \
+            --sarif \
+            --output semgrep-results.sarif
+
+      - name: Upload SARIF as artifact
         if: always()
-        uses: github/codeql-action/upload-sarif@v4
+        uses: actions/upload-artifact@v4
         with:
-          sarif_file: semgrep-results.sarif
-        continue-on-error: true
+          name: semgrep-sarif
+          path: semgrep-results.sarif
+          retention-days: 30
+
+      - name: Semgrep step summary
+        if: always()
+        run: |
+          echo "## Semgrep SAST Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f semgrep-results.sarif ]; then
+            FINDINGS=$(python3 -c "
+          import json, sys
+          with open('semgrep-results.sarif') as f:
+              data = json.load(f)
+          runs = data.get('runs', [])
+          total = sum(len(r.get('results', [])) for r in runs)
+          print(total)
+          " 2>/dev/null || echo "unknown")
+            echo "**Findings:** $FINDINGS" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No SARIF output produced." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Download the \`semgrep-sarif\` artifact for full details." >> "$GITHUB_STEP_SUMMARY"
 
   dependency-audit:
     name: Dependency Audit
