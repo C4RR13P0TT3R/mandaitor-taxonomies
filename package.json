@@ -10,6 +10,7 @@
     "lint": "pnpm -r lint",
     "validate": "node scripts/validate-all.mjs",
     "clean": "pnpm -r clean",
+    "generate:manifest": "node scripts/generate-manifest.mjs",
     "new-taxonomy": "node scripts/scaffold-taxonomy.mjs"
   },
   "devDependencies": {
