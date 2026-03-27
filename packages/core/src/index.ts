@@ -28,3 +28,12 @@ export {
   lookupTemplate,
   searchActions,
 } from "./registry.js";
+
+export type { RiskLevel, RiskLocale, RiskLabelInfo } from "./risk-labels.js";
+
+export {
+  riskLabel,
+  riskLabelInfo,
+  allRiskLabels,
+  supportedLocales,
+} from "./risk-labels.js";
