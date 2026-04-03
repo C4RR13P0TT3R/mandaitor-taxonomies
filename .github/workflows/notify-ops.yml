@@ -1,0 +1,52 @@
+name: Notify Ops on Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    name: Trigger Taxonomy Import
+    runs-on: ubuntu-latest
+    # Only trigger after publish.yml has completed successfully
+    # This workflow runs in parallel but the import worker checks npm availability
+    steps:
+      - name: Determine published packages
+        id: packages
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
+          # Extract release body for changelog
+          BODY=$(cat <<'RELEASE_BODY'
+          ${{ github.event.release.body }}
+          RELEASE_BODY
+          )
+          # Escape for JSON
+          BODY_ESCAPED=$(echo "${BODY}" | python3 -c "import sys,json; print(json.dumps(sys.stdin.read()))")
+          echo "body=${BODY_ESCAPED}" >> $GITHUB_OUTPUT
+
+      - name: Trigger taxonomy import in mandaitor-ops
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.CROSS_REPO_TOKEN }}
+          repository: C4RR13P0TT3R/mandaitor-ops
+          event-type: taxonomy-release
+          client-payload: |
+            {
+              "tag": "${{ github.event.release.tag_name }}",
+              "url": "${{ github.event.release.html_url }}",
+              "author": "${{ github.event.release.author.login }}",
+              "prerelease": ${{ github.event.release.prerelease }}
+            }
+
+      - name: Notification summary
+        run: |
+          echo "## Ops Notification Sent" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Release: \`${{ github.event.release.tag_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Target: \`mandaitor-ops\` → \`taxonomy-import\` workflow" >> "$GITHUB_STEP_SUMMARY"
+          echo "Event: \`taxonomy-release\`" >> "$GITHUB_STEP_SUMMARY"
