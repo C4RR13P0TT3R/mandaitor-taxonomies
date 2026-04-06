@@ -147,7 +147,7 @@ mandaitor-taxonomies/
 
 ## Integration with Mandaitor
 
-Taxonomies published from this repository are consumed by the main [mandaitor](https://github.com/C4RR13P0TT3R/mandaitor) registry. The integration works as follows:
+Taxonomies published from this repository are consumed by the main [mandaitor-core](https://github.com/C4RR13P0TT3R/mandaitor-core) registry. The integration works as follows:
 
 1. Taxonomy packages are published to NPM under the `@mandaitor` scope
 2. The Mandaitor API imports and registers taxonomies at startup
