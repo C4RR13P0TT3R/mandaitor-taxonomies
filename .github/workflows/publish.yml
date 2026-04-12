@@ -40,6 +40,16 @@ jobs:
       - name: Validate all taxonomies
         run: pnpm run validate
 
+      - name: Check for scaffold TODOs
+        run: |
+          TODO_HITS=$(grep -r "// TODO:" taxonomies/*/src/ packages/*/src/ 2>/dev/null || true)
+          if [ -n "$TODO_HITS" ]; then
+            echo "::error::Scaffold TODOs found in publishable source files:"
+            echo "$TODO_HITS"
+            exit 1
+          fi
+          echo "No scaffold TODOs found in source files"
+
       - name: Publish packages
         run: pnpm -r publish --no-git-checks --access public
         env:
