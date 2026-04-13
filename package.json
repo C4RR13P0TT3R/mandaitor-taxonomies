@@ -6,17 +6,17 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r build",
-    "test": "pnpm -r test",
-    "lint": "pnpm -r lint",
-    "validate": "node scripts/validate-all.mjs",
+    "test": "pnpm --filter @mandaitor/taxonomy-core build && pnpm -r test",
+    "lint": "pnpm --filter @mandaitor/taxonomy-core build && pnpm -r lint",
+    "validate": "pnpm --filter @mandaitor/taxonomy-core build && node scripts/validate-all.mjs",
     "clean": "pnpm -r clean",
     "generate:manifest": "node scripts/generate-manifest.mjs",
     "new-taxonomy": "node scripts/scaffold-taxonomy.mjs"
   },
   "devDependencies": {
+    "prettier": "^3.8.2",
     "typescript": "^6.0.2",
-    "vitest": "^2.0.0",
-    "prettier": "^3.4.0"
+    "vitest": "^2.0.0"
   },
   "engines": {
     "node": ">=20.0.0",

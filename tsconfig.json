@@ -9,11 +9,17 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
+    "ignoreDeprecations": "6.0",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "baseUrl": ".",
+    "paths": {
+      "@mandaitor/taxonomy-core": ["packages/core/dist/index.d.ts"],
+      "@mandaitor/taxonomy-core/schema": ["packages/core/dist/schema.d.ts"]
+    }
   },
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }
