@@ -8,18 +8,26 @@
 import { readdirSync, existsSync } from "fs";
 import { join } from "path";
 import { pathToFileURL } from "url";
+import { execSync } from "child_process";
 
 const TAXONOMIES_DIR = "taxonomies";
 const SKIP_DIRS = ["_template"];
 
-async function main() {
-  // Dynamic import of core (must be built first)
-  const corePath = join(process.cwd(), "packages", "core", "dist", "index.js");
-  if (!existsSync(corePath)) {
-    console.error("Error: @mandaitor/taxonomy-core must be built first.");
-    console.error("Run: pnpm -r build");
-    process.exit(1);
+function ensureBuilt(outputPath, buildCommand, label) {
+  if (existsSync(outputPath)) {
+    return;
   }
+
+  console.log(`Building ${label}...`);
+  execSync(buildCommand, {
+    cwd: process.cwd(),
+    stdio: "inherit",
+  });
+}
+
+async function main() {
+  const corePath = join(process.cwd(), "packages", "core", "dist", "index.js");
+  ensureBuilt(corePath, "pnpm --filter @mandaitor/taxonomy-core build", "@mandaitor/taxonomy-core");
 
   const core = await import(pathToFileURL(corePath).href);
 
@@ -37,10 +45,7 @@ async function main() {
 
   for (const dir of dirs) {
     const distIndex = join(process.cwd(), TAXONOMIES_DIR, dir, "dist", "index.js");
-    if (!existsSync(distIndex)) {
-      console.error(`  SKIP  ${dir} — not built (run pnpm -r build)`);
-      continue;
-    }
+    ensureBuilt(distIndex, `pnpm --filter @mandaitor/taxonomy-${dir} build`, `@mandaitor/taxonomy-${dir}`);
 
     try {
       const mod = await import(pathToFileURL(distIndex).href);
