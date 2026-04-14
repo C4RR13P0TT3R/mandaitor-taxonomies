@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.2.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.1.0...v1.2.0) (2026-04-14)
+
+
+### Features
+
+* add scaffold TODO check before taxonomy publish ([3816c0c](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/3816c0cbe98730f510807a795553d72b45259bc2))
+* add scaffold TODO check before taxonomy publish ([faa284f](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/faa284fb2375fdde7a0136ccc55fd99ec20d1a9b))
+* finalize closed beta launch readiness ([75e30b8](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/75e30b855aa28fa0eae5e2e0379a62b63a92e643))
+* finalize closed beta launch readiness ([4741f29](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/4741f2967d57088af5959bf4a2fdc3532b2206bd))
+
+
+### Bug Fixes
+
+* auto-build packages during validation ([98793db](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/98793db0ddcc5b6a21ddd8528c38bdd95360da6b))
+
 ## [1.1.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.0.0...v1.1.0) (2026-03-27)
 
 
