@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.3.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.2.0...v1.3.0) (2026-04-15)
+
+
+### Features
+
+* add aviation taxonomy community proposal ([15f3e3a](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/15f3e3a90cba0733e167e692acbad77476d3dedf))
+* add aviation taxonomy community proposal ([1ab28ee](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/1ab28ee0187666e6480af1b1b2e6bb3c3aaf6cf8))
+* add aviation taxonomy community proposal ([e28d9ed](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/e28d9ed3bed660036bb02d2f7bf2aa641d4c07a4))
+* add aviation taxonomy community proposal ([9001b87](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/9001b877f7ae379cefdc2b8175208bacc533b14b))
+* add aviation taxonomy community proposal ([8e2549e](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/8e2549e664a117ae7f799507dd0299d48daf1f20))
+* add aviation taxonomy community proposal ([75e7416](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/75e7416ebbbc2b4beb125f9cacba357b72e76636))
+* add aviation taxonomy community proposal ([867e1b8](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/867e1b82b23ee37f5d31554852beb28498f05aab))
+* add aviation taxonomy community proposal ([3aad319](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/3aad3192b7740b0c7779c412b6fef7c6e245267a))
+* add aviation taxonomy community proposal ([5014226](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/5014226b37c4e560dcdbd232e2b73bc482f77e74))
+
+
+### Bug Fixes
+
+* add aviation lockfile importer ([e6019ab](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/e6019ab879172099ab97d6f9627edc73a50c4402))
+* approve esbuild build script ([7aaf3bc](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/7aaf3bc0af670ebfad383938ac9918dcbbaafda8))
+* approve esbuild build script ([2bdc6a0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/2bdc6a0eb02f62919ea35f8459066dadc01088f3))
+* approve esbuild@0.21.5 build script ([47981b3](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/47981b3791df0fe5e2085f59311e595a6d983e3c))
+* approve esbuild@0.21.5 build script ([e7c8288](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/e7c8288452056b1d617d9b150cb92073031465b1))
+* remediate code scanning issues ([61d237a](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/61d237a6dfb55e2c9261dfe85f79b18e92502343))
+* remediate taxonomy code scanning issues ([f8bf64a](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/f8bf64abe1db961d2d30c0c9e1634bd7d5f26e90))
+
 ## [1.2.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.1.0...v1.2.0) (2026-04-14)
 
 
