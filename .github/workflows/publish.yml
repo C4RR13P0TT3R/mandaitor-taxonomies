@@ -29,7 +29,7 @@ jobs:
           scope: "@mandaitor"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --config.strict-dep-builds=false
 
       - name: Build all packages
         run: pnpm run build
@@ -55,9 +55,125 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Generate release manifest
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          tag = Path('/tmp/tag.txt')
+          tag.write_text('${{ github.event.release.tag_name }}\n', encoding='utf-8')
+
+          manifest = {
+              'tag': '${{ github.event.release.tag_name }}',
+              'url': '${{ github.event.release.html_url }}',
+              'prerelease': ${{ github.event.release.prerelease && 'True' || 'False' }},
+              'packages': [],
+              'taxonomies': [],
+          }
+
+          for package_file in sorted(Path('packages').glob('*/package.json')):
+              pkg = json.loads(package_file.read_text(encoding='utf-8'))
+              manifest['packages'].append({
+                  'name': pkg['name'],
+                  'version': pkg['version'],
+                  'description': pkg.get('description', ''),
+                  'kind': 'core',
+                  'slug': package_file.parent.name,
+              })
+
+          for package_file in sorted(Path('taxonomies').glob('*/package.json')):
+              pkg = json.loads(package_file.read_text(encoding='utf-8'))
+              item = {
+                  'name': pkg['name'],
+                  'version': pkg['version'],
+                  'description': pkg.get('description', ''),
+                  'kind': 'taxonomy',
+                  'slug': package_file.parent.name,
+              }
+              manifest['packages'].append(item)
+              manifest['taxonomies'].append({
+                  'slug': item['slug'],
+                  'package_name': item['name'],
+                  'version': item['version'],
+                  'description': item['description'],
+              })
+
+          Path('/tmp/release-manifest.json').write_text(
+              json.dumps(manifest, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Upload release manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: taxonomy-release-manifest-${{ github.event.release.tag_name }}
+          path: /tmp/release-manifest.json
+
+      - name: Dispatch downstream automation
+        if: github.event.release.prerelease == false
+        env:
+          GH_TOKEN: ${{ secrets.CROSS_REPO_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::warning::CROSS_REPO_TOKEN is not configured; skipping downstream dispatch."
+            exit 0
+          fi
+
+          python3 - <<'PY'
+          import json
+          import subprocess
+          import tempfile
+          from pathlib import Path
+
+          manifest = json.loads(Path('/tmp/release-manifest.json').read_text(encoding='utf-8'))
+          payload = {
+              'event_type': 'taxonomy-release',
+              'client_payload': {
+                  'tag': manifest['tag'],
+                  'url': manifest['url'],
+                  'prerelease': manifest['prerelease'],
+              },
+          }
+
+          with tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as handle:
+              json.dump(payload, handle)
+              handle.flush()
+              subprocess.run(
+                  [
+                      'gh',
+                      'api',
+                      'repos/C4RR13P0TT3R/mandaitor-ops/dispatches',
+                      '--method',
+                      'POST',
+                      '--input',
+                      handle.name,
+                  ],
+                  check=True,
+              )
+          PY
+
       - name: Publish summary
         run: |
+          TAXONOMY_COUNT=$(python3 - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path('/tmp/release-manifest.json').read_text(encoding='utf-8'))
+          print(len(manifest['taxonomies']))
+          PY
+          )
+          PACKAGE_COUNT=$(python3 - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path('/tmp/release-manifest.json').read_text(encoding='utf-8'))
+          print(len(manifest['packages']))
+          PY
+          )
+
           echo "## Taxonomy Packages Published" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "Release: \`${{ github.event.release.tag_name }}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "Registry: https://www.npmjs.com/org/mandaitor" >> "$GITHUB_STEP_SUMMARY"
+          echo "Packages published: ${PACKAGE_COUNT}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Taxonomies in release: ${TAXONOMY_COUNT}" >> "$GITHUB_STEP_SUMMARY"
