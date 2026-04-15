@@ -18,6 +18,7 @@ export const CONSTRUCTION_TEMPLATES: TaxonomyMandateTemplate[] = [
         "construction.validation.flag",
         "construction.validation.reject",
         "construction.validation.request_recheck",
+        "construction.validation.request_change",
       ],
       resourcePatterns: ["project-zone-trade"],
       effect: "ALLOW",
