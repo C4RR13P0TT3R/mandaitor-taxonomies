@@ -3,4 +3,4 @@ packages:
   - "taxonomies/*"
 
 onlyBuiltDependencies:
-  - esbuild
+  - esbuild@0.21.5
