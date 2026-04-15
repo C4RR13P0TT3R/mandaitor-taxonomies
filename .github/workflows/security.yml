@@ -36,7 +36,7 @@ jobs:
             --output semgrep-results.sarif
 
       - name: Upload SARIF as artifact
-        if: always()
+        if: always( )
         uses: actions/upload-artifact@v7
         with:
           name: semgrep-sarif
