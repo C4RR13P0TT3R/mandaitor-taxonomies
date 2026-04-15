@@ -1,34 +1,67 @@
 ## Summary
 
-<!-- Brief description of the taxonomy or changes -->
+<!-- Describe what this pull request changes and why it should exist. -->
 
-## Taxonomy Details
+## Contribution Type
+
+- [ ] New taxonomy
+- [ ] New entry in an existing taxonomy
+- [ ] Refinement or clarification of an existing entry
+- [ ] Alias or relationship update
+- [ ] Deprecation or replacement
+- [ ] Documentation only
+
+## Scope and Intent
+
+<!-- Explain the business scope, the user problem, and the operational surface covered. -->
+
+## Taxonomy Metrics
 
 | Metric | Count |
 |---|---|
-| Actions | |
-| Resource Patterns | |
-| Constraint Templates | |
-| Mandate Templates | |
+| Actions added or changed | |
+| Resource patterns added or changed | |
+| Constraint templates added or changed | |
+| Mandate templates added or changed | |
+| Metadata-only entries added or changed | |
 
-## Checklist
+## Governance Metadata
 
-- [ ] Taxonomy ID follows naming conventions (`lowercase-with-hyphens`)
-- [ ] All action IDs are prefixed with the taxonomy ID
-- [ ] All CRITICAL actions have `requiresHumanApproval: true`
-- [ ] All resource pattern placeholders have matching parameter definitions
-- [ ] All mandate templates reference existing actions and resource patterns
-- [ ] Tests pass locally (`pnpm build && pnpm test`)
-- [ ] Validator passes (`pnpm validate`)
-- [ ] Metadata includes maintainer information
-- [ ] Description is accurate and complete
+| Field | Value |
+|---|---|
+| Taxonomy ID | |
+| Entry IDs affected | |
+| Intended maturity (`draft`, `candidate`, `stable`, `deprecated`) | |
+| Risk class (`low`, `medium`, `high`, `critical`) | |
+| Jurisdictional scope | |
+| Relevant industry standards or regulations | |
+| Proposed successor if deprecating | |
 
-## Industry Context
+## Design Notes
 
-<!-- Link to relevant industry standards, regulations, or documentation -->
+<!-- Explain naming choices, why this does not duplicate an existing concept, and any trade-offs reviewers should focus on. -->
 
-## Breaking Changes
+## Validation Checklist
 
-<!-- If updating an existing taxonomy, describe any breaking changes -->
+- [ ] Taxonomy ID follows repository naming conventions
+- [ ] New or changed IDs are stable and semantically precise
+- [ ] Labels and descriptions are human-readable and non-ambiguous
+- [ ] Overlap with existing taxonomy concepts has been reviewed
+- [ ] Risk classification is justified
+- [ ] High-impact actions or templates document human approval expectations
+- [ ] Resource pattern placeholders have matching parameter definitions
+- [ ] Mandate templates reference existing actions and resource patterns
+- [ ] New metadata fields are documented in `docs/taxonomy-schema.md` when relevant
+- [ ] Local checks pass: `pnpm build`
+- [ ] Local checks pass: `pnpm test`
+- [ ] Local checks pass: `pnpm validate`
 
-None / Description of breaking changes
+## Maintainer Review Focus
+
+<!-- Call out any area where you want special feedback, such as naming, hierarchy, scope boundaries, or migration concerns. -->
+
+## Breaking Changes and Migration Notes
+
+<!-- If updating an existing taxonomy, describe any breaking changes, deprecations, or migration guidance. If none, write `None`. -->
+
+None
