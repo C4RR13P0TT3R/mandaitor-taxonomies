@@ -8,18 +8,18 @@
 import { readdirSync, existsSync } from "fs";
 import { join } from "path";
 import { pathToFileURL } from "url";
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 
 const TAXONOMIES_DIR = "taxonomies";
 const SKIP_DIRS = ["_template"];
 
-function ensureBuilt(outputPath, buildCommand, label) {
+function ensureBuilt(outputPath, buildArgs, label) {
   if (existsSync(outputPath)) {
     return;
   }
 
   console.log(`Building ${label}...`);
-  execSync(buildCommand, {
+  execFileSync("pnpm", buildArgs, {
     cwd: process.cwd(),
     stdio: "inherit",
   });
@@ -27,7 +27,7 @@ function ensureBuilt(outputPath, buildCommand, label) {
 
 async function main() {
   const corePath = join(process.cwd(), "packages", "core", "dist", "index.js");
-  ensureBuilt(corePath, "pnpm --filter @mandaitor/taxonomy-core build", "@mandaitor/taxonomy-core");
+  ensureBuilt(corePath, ["--filter", "@mandaitor/taxonomy-core", "build"], "@mandaitor/taxonomy-core");
 
   const core = await import(pathToFileURL(corePath).href);
 
@@ -45,7 +45,7 @@ async function main() {
 
   for (const dir of dirs) {
     const distIndex = join(process.cwd(), TAXONOMIES_DIR, dir, "dist", "index.js");
-    ensureBuilt(distIndex, `pnpm --filter @mandaitor/taxonomy-${dir} build`, `@mandaitor/taxonomy-${dir}`);
+    ensureBuilt(distIndex, ["--filter", `@mandaitor/taxonomy-${dir}`, "build"], `@mandaitor/taxonomy-${dir}`);
 
     try {
       const mod = await import(pathToFileURL(distIndex).href);
