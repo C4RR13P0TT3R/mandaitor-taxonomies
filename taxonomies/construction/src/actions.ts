@@ -45,6 +45,15 @@ export const CONSTRUCTION_ACTIONS: TaxonomyAction[] = [
     requiresHumanApproval: false,
     tags: ["validation", "recheck"],
   },
+  {
+    id: "build.validation.request_change",
+    label: "Request Plan Change",
+    description:
+      "Contributor-proposed action intended to request a plan change after repeated validation findings",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: false,
+    tags: ["validation", "change-management"],
+  },
 
   // ── Scheduling ─────────────────────────────────────────
   {
