@@ -1,0 +1,41 @@
+{
+  "name": "@mandaitor/taxonomy-aviation",
+  "version": "0.1.0",
+  "description": "Aviation operations taxonomy for Mandaitor — actions, resources, constraints and mandate templates for dispatch, maintenance coordination, flight documentation and safety escalation workflows",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "lint": "tsc --noEmit",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo"
+  },
+  "dependencies": {
+    "@mandaitor/taxonomy-core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.2",
+    "vitest": "^2.0.0"
+  },
+  "keywords": [
+    "mandaitor",
+    "taxonomy",
+    "aviation",
+    "flight-ops",
+    "delegation",
+    "agentic-ai"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "license": "Apache-2.0"
+}
