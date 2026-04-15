@@ -29,6 +29,35 @@ const RESOURCE_NAME_PATTERN = /^[a-z][a-z0-9-]*$/;
 // Semver pattern
 const SEMVER_PATTERN = /^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$/;
 
+function extractUriTemplatePlaceholders(pattern: string): string[] {
+  const placeholders: string[] = [];
+  let current = "";
+  let inPlaceholder = false;
+
+  for (const char of pattern) {
+    if (char === "{") {
+      inPlaceholder = true;
+      current = "";
+      continue;
+    }
+
+    if (char === "}") {
+      if (inPlaceholder && current.length > 0) {
+        placeholders.push(current);
+      }
+      inPlaceholder = false;
+      current = "";
+      continue;
+    }
+
+    if (inPlaceholder) {
+      current += char;
+    }
+  }
+
+  return placeholders;
+}
+
 /**
  * Validate a complete taxonomy definition.
  * Returns errors (must fix) and warnings (should fix).
@@ -307,7 +336,7 @@ function validateResourcePattern(
   }
 
   // Check that all {param} placeholders have corresponding parameter definitions
-  const placeholders = [...pattern.pattern.matchAll(/\{([^}]+)\}/g)].map((m) => m[1]);
+  const placeholders = extractUriTemplatePlaceholders(pattern.pattern);
   const paramNames = new Set(pattern.parameters.map((p) => p.name));
   for (const placeholder of placeholders) {
     if (!paramNames.has(placeholder)) {
