@@ -45,6 +45,15 @@ export const CONSTRUCTION_ACTIONS: TaxonomyAction[] = [
     requiresHumanApproval: false,
     tags: ["validation", "recheck"],
   },
+  {
+    id: "construction.validation.request_change",
+    label: "Request Plan Change",
+    description:
+      "Authorize AI agent to request a documented plan change when validation evidence indicates a repeatable design or coordination issue",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: false,
+    tags: ["validation", "change-management", "coordination"],
+  },
 
   // ── Scheduling ─────────────────────────────────────────
   {
