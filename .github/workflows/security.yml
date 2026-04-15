@@ -36,7 +36,7 @@ jobs:
             --output semgrep-results.sarif
 
       - name: Upload SARIF as artifact
-        if: always()
+        if: always( )
         uses: actions/upload-artifact@v7
         with:
           name: semgrep-sarif
@@ -74,7 +74,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v5
+        uses: pnpm/action-setup@v6
         with:
           version: 9
 
