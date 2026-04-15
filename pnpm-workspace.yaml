@@ -1,3 +1,6 @@
 packages:
   - "packages/*"
   - "taxonomies/*"
+
+onlyBuiltDependencies:
+  - esbuild
