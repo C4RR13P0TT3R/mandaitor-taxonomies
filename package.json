@@ -1,6 +1,6 @@
 {
   "name": "mandaitor-taxonomies",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "private": true,
   "description": "Community-contributed industry taxonomies for the Mandaitor delegation registry",
   "type": "module",
