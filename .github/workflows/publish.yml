@@ -3,6 +3,27 @@ name: Publish Taxonomies
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to backfill (for example v1.3.0)"
+        required: true
+        type: string
+      url:
+        description: "Release URL override (optional)"
+        required: false
+        type: string
+        default: ""
+      prerelease:
+        description: "Treat this run as prerelease"
+        required: false
+        type: boolean
+        default: false
+      skip_publish:
+        description: "Skip npm publish and only regenerate manifest / downstream dispatch"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -12,8 +33,45 @@ jobs:
     name: Build & Publish
     runs-on: ubuntu-latest
     steps:
+      - name: Normalize release context
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_TAG: ${{ inputs.tag || '' }}
+          INPUT_URL: ${{ inputs.url || '' }}
+          INPUT_PRERELEASE: ${{ inputs.prerelease || false }}
+          RELEASE_TAG: ${{ github.event.release.tag_name || '' }}
+          RELEASE_URL: ${{ github.event.release.html_url || '' }}
+          RELEASE_PRERELEASE: ${{ github.event.release.prerelease || false }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            TAG="$INPUT_TAG"
+            URL="$INPUT_URL"
+            PRERELEASE="$INPUT_PRERELEASE"
+          else
+            TAG="$RELEASE_TAG"
+            URL="$RELEASE_URL"
+            PRERELEASE="$RELEASE_PRERELEASE"
+          fi
+
+          if [ -z "$TAG" ]; then
+            echo "::error::Release tag is required."
+            exit 1
+          fi
+
+          if [ -z "$URL" ]; then
+            URL="https://github.com/${{ github.repository }}/releases/tag/${TAG}"
+          fi
+
+          {
+            echo "RELEASE_TAG=$TAG"
+            echo "RELEASE_URL=$URL"
+            echo "RELEASE_PRERELEASE=$PRERELEASE"
+          } >> "$GITHUB_ENV"
+
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: ${{ env.RELEASE_TAG }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -51,6 +109,7 @@ jobs:
           echo "No scaffold TODOs found in source files"
 
       - name: Publish packages
+        if: github.event_name != 'workflow_dispatch' || inputs.skip_publish == false
         run: pnpm -r publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -59,15 +118,19 @@ jobs:
         run: |
           python3 - <<'PY'
           import json
+          import os
           from pathlib import Path
 
-          tag = Path('/tmp/tag.txt')
-          tag.write_text('${{ github.event.release.tag_name }}\n', encoding='utf-8')
+          tag = os.environ['RELEASE_TAG']
+          url = os.environ['RELEASE_URL']
+          prerelease = os.environ.get('RELEASE_PRERELEASE', 'false').lower() == 'true'
+
+          Path('/tmp/tag.txt').write_text(f'{tag}\n', encoding='utf-8')
 
           manifest = {
-              'tag': '${{ github.event.release.tag_name }}',
-              'url': '${{ github.event.release.html_url }}',
-              'prerelease': ${{ github.event.release.prerelease && 'True' || 'False' }},
+              'tag': tag,
+              'url': url,
+              'prerelease': prerelease,
               'packages': [],
               'taxonomies': [],
           }
@@ -108,11 +171,11 @@ jobs:
       - name: Upload release manifest
         uses: actions/upload-artifact@v4
         with:
-          name: taxonomy-release-manifest-${{ github.event.release.tag_name }}
+          name: taxonomy-release-manifest-${{ env.RELEASE_TAG }}
           path: /tmp/release-manifest.json
 
       - name: Dispatch downstream automation
-        if: github.event.release.prerelease == false
+        if: env.RELEASE_PRERELEASE != 'true'
         env:
           GH_TOKEN: ${{ secrets.CROSS_REPO_TOKEN }}
         run: |
@@ -173,7 +236,7 @@ jobs:
 
           echo "## Taxonomy Packages Published" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "Release: \`${{ github.event.release.tag_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Release: \`${RELEASE_TAG}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "Registry: https://www.npmjs.com/org/mandaitor" >> "$GITHUB_STEP_SUMMARY"
           echo "Packages published: ${PACKAGE_COUNT}" >> "$GITHUB_STEP_SUMMARY"
           echo "Taxonomies in release: ${TAXONOMY_COUNT}" >> "$GITHUB_STEP_SUMMARY"
