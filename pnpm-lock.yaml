@@ -92,6 +92,19 @@ importers:
         specifier: ^2.0.0
         version: 2.1.9
 
+  taxonomies/venture:
+    dependencies:
+      '@mandaitor/taxonomy-core':
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      typescript:
+        specifier: ^6.0.2
+        version: 6.0.2
+      vitest:
+        specifier: ^2.0.0
+        version: 2.1.9
+
 packages:
 
   '@esbuild/aix-ppc64@0.21.5':
