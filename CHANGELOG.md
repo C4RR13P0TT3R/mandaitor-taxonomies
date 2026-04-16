@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.3.0...v1.4.0) (2026-04-16)
+
+
+### Features
+
+* add realestate taxonomy ([3dd282d](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/3dd282d65b82c3f648577882047449a70aa9ed2d))
+* add realestate taxonomy ([4a12074](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/4a120743d861c63675c57d07ed9c4b2638b7a59b))
+* add venture taxonomy ([7faf1d4](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/7faf1d4a611f0b1782a56d5db42a842499981e86))
+* **venture:** add venture taxonomy ([7036e69](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/7036e69f9e1a19a59706258f150d42fd4b2ccbba))
+
 ## [1.3.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.2.0...v1.3.0) (2026-04-15)
 
 
