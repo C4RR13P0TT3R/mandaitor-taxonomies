@@ -27,6 +27,8 @@ jobs:
         run: pnpm install --frozen-lockfile --config.strict-dep-builds=false
       - name: Build
         run: pnpm run build
+      - name: Check package READMEs
+        run: pnpm run check:package-readmes
       - name: Lint
         run: pnpm run lint
       - name: Test
