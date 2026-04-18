@@ -9,6 +9,7 @@
     "test": "pnpm --filter @mandaitor/taxonomy-core build && pnpm -r test",
     "lint": "pnpm --filter @mandaitor/taxonomy-core build && pnpm -r lint",
     "validate": "pnpm --filter @mandaitor/taxonomy-core build && node scripts/validate-all.mjs",
+    "check:package-readmes": "node scripts/check-package-readmes.mjs",
     "clean": "pnpm -r clean",
     "generate:manifest": "node scripts/generate-manifest.mjs",
     "new-taxonomy": "node scripts/scaffold-taxonomy.mjs"

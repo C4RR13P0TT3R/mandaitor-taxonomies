@@ -202,6 +202,38 @@ export default ${taxonomyId.replace(/-([a-z])/g, (_, c) => c.toUpperCase())}Taxo
 `,
 );
 
+// README.md
+writeFileSync(
+  join(taxonomyDir, "README.md"),
+  `# @mandaitor/taxonomy-${taxonomyId}
+
+${taxonomyName} taxonomy for Mandaitor
+
+## What this package provides
+
+This package publishes the **${taxonomyName} taxonomy** for Mandaitor. It exposes the compiled taxonomy object together with its actions, resource patterns, constraint templates, and mandate templates so downstream services can register and validate this vertical at runtime.
+
+## Installation
+
+\`\`\`bash
+npm install @mandaitor/taxonomy-core @mandaitor/taxonomy-${taxonomyId}
+\`\`\`
+
+## Usage
+
+\`\`\`ts
+import { registerTaxonomy } from "@mandaitor/taxonomy-core";
+import { ${taxonomyId.replace(/-([a-z])/g, (_, c) => c.toUpperCase())}Taxonomy } from "@mandaitor/taxonomy-${taxonomyId}";
+
+registerTaxonomy(${taxonomyId.replace(/-([a-z])/g, (_, c) => c.toUpperCase())}Taxonomy);
+\`\`\`
+
+## License
+
+Apache-2.0
+`,
+);
+
 // test/taxonomy.test.ts
 writeFileSync(
   join(taxonomyDir, "test", "taxonomy.test.ts"),
