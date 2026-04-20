@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.5.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.4.0...v1.5.0) (2026-04-20)
+
+
+### Features
+
+* add maritime taxonomy package ([1d8522d](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/1d8522d59083efc7170c59f366ff2918500dc3b8))
+* add maritime taxonomy package ([d020d48](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/d020d48c92194262c412e3ee61adca5c73ad23f9))
+* add space taxonomy package ([5c71e42](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/5c71e427f91333f79d8e84080a893ed2dbdfc519))
+* add space taxonomy package ([184d09f](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/184d09f3f69c232ed0bb13a8c006184a070a75c3))
+
+
+### Bug Fixes
+
+* use explicit ESM imports in maritime taxonomy ([a072f36](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/a072f3611693938e089da4f01aaf27d7b0a53628))
+
 ## [1.4.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.3.0...v1.4.0) (2026-04-16)
 
 
