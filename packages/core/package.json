@@ -23,7 +23,7 @@
     "clean": "rm -rf dist tsconfig.tsbuildinfo"
   },
   "devDependencies": {
-    "typescript": "^6.0.2",
+    "typescript": "^6.0.3",
     "vitest": "^2.0.0"
   },
   "publishConfig": {
