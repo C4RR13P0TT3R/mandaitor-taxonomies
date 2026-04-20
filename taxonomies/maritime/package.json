@@ -1,7 +1,7 @@
 {
-  "name": "@mandaitor/taxonomy-aviation",
+  "name": "@mandaitor/taxonomy-maritime",
   "version": "0.1.0",
-  "description": "Aviation operations taxonomy for Mandaitor — actions, resources, constraints and mandate templates for dispatch, maintenance coordination, flight documentation and safety escalation workflows",
+  "description": "Maritime & Port Operations taxonomy for Mandaitor",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,9 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
@@ -28,8 +30,7 @@
   "keywords": [
     "mandaitor",
     "taxonomy",
-    "aviation",
-    "flight-ops",
+    "maritime",
     "delegation",
     "agentic-ai"
   ],
