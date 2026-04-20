@@ -1,15 +1,15 @@
 // @mandaitor/taxonomy-maritime — Maritime & Port Operations taxonomy
 
 import type { IndustryTaxonomy } from "@mandaitor/taxonomy-core";
-import { MARITIME_ACTIONS } from "./actions";
-import { MARITIME_RESOURCES } from "./resources";
-import { MARITIME_CONSTRAINTS } from "./constraints";
-import { MARITIME_TEMPLATES } from "./templates";
+import { MARITIME_ACTIONS } from "./actions.js";
+import { MARITIME_RESOURCES } from "./resources.js";
+import { MARITIME_CONSTRAINTS } from "./constraints.js";
+import { MARITIME_TEMPLATES } from "./templates.js";
 
-export { MARITIME_ACTIONS } from "./actions";
-export { MARITIME_RESOURCES } from "./resources";
-export { MARITIME_CONSTRAINTS } from "./constraints";
-export { MARITIME_TEMPLATES } from "./templates";
+export { MARITIME_ACTIONS } from "./actions.js";
+export { MARITIME_RESOURCES } from "./resources.js";
+export { MARITIME_CONSTRAINTS } from "./constraints.js";
+export { MARITIME_TEMPLATES } from "./templates.js";
 
 export const maritimeTaxonomy: IndustryTaxonomy = {
   metadata: {
