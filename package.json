@@ -15,8 +15,8 @@
     "new-taxonomy": "node scripts/scaffold-taxonomy.mjs"
   },
   "devDependencies": {
-    "prettier": "^3.8.2",
-    "typescript": "^6.0.2",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3",
     "vitest": "^2.0.0"
   },
   "engines": {
