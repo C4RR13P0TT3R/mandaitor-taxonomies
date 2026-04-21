@@ -1,5 +1,3 @@
-name: Publish Taxonomies
-
 on:
   release:
     types: [published]
@@ -103,7 +101,7 @@ jobs:
 
       - name: Check for scaffold TODOs
         run: |
-          TODO_HITS=$(grep -r "// TODO:" taxonomies/*/src/ packages/*/src/ 2>/dev/null || true )
+          TODO_HITS=$(grep -r "// TODO:" taxonomies/*/src/ packages/*/src/ 2>/dev/null || true  )
           if [ -n "$TODO_HITS" ]; then
             echo "::error::Scaffold TODOs found in publishable source files:"
             echo "$TODO_HITS"
@@ -172,7 +170,7 @@ jobs:
           PY
 
       - name: Upload release manifest
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: taxonomy-release-manifest-${{ env.RELEASE_TAG }}
           path: /tmp/release-manifest.json
@@ -203,21 +201,28 @@ jobs:
               },
           }
 
+          targets = [
+              'C4RR13P0TT3R/mandaitor-ops',
+              'C4RR13P0TT3R/mandaitor-public',
+          ]
+
           with tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as handle:
               json.dump(payload, handle)
               handle.flush()
-              subprocess.run(
-                  [
-                      'gh',
-                      'api',
-                      'repos/C4RR13P0TT3R/mandaitor-ops/dispatches',
-                      '--method',
-                      'POST',
-                      '--input',
-                      handle.name,
-                  ],
-                  check=True,
-              )
+
+              for repo in targets:
+                  subprocess.run(
+                      [
+                          'gh',
+                          'api',
+                          f'repos/{repo}/dispatches',
+                          '--method',
+                          'POST',
+                          '--input',
+                          handle.name,
+                      ],
+                      check=True,
+                  )
           PY
 
       - name: Publish summary
@@ -243,3 +248,4 @@ jobs:
           echo "Registry: https://www.npmjs.com/org/mandaitor" >> "$GITHUB_STEP_SUMMARY"
           echo "Packages published: ${PACKAGE_COUNT}" >> "$GITHUB_STEP_SUMMARY"
           echo "Taxonomies in release: ${TAXONOMY_COUNT}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Downstream targets: mandaitor-ops, mandaitor-public" >> "$GITHUB_STEP_SUMMARY"
