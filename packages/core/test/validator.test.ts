@@ -240,4 +240,12 @@ describe("matchResourcePattern", () => {
   it("rejects non-matching resources", () => {
     expect(matchResourcePattern("test:project:{projectId}/*", "other:thing")).toBe(false);
   });
+
+  it("rejects empty parameter segments", () => {
+    expect(matchResourcePattern("test:project:{projectId}", "test:project:")).toBe(false);
+  });
+
+  it("treats unmatched braces as literal characters", () => {
+    expect(matchResourcePattern("test:{project", "test:{project")).toBe(true);
+  });
 });
