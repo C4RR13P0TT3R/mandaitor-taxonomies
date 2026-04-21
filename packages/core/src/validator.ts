@@ -570,11 +570,115 @@ export function validateScope(
   return { valid: errors.length === 0, errors, warnings };
 }
 
+type ResourcePatternToken =
+  | { type: "literal"; value: string }
+  | { type: "param" }
+  | { type: "star" };
+
+function tokenizeResourcePattern(pattern: string): ResourcePatternToken[] {
+  const tokens: ResourcePatternToken[] = [];
+  let literalBuffer = "";
+
+  for (let index = 0; index < pattern.length; index += 1) {
+    const char = pattern[index];
+
+    if (char === "*") {
+      if (literalBuffer) {
+        tokens.push({ type: "literal", value: literalBuffer });
+        literalBuffer = "";
+      }
+
+      if (tokens[tokens.length - 1]?.type !== "star") {
+        tokens.push({ type: "star" });
+      }
+      continue;
+    }
+
+    if (char === "{") {
+      const closingBraceIndex = pattern.indexOf("}", index + 1);
+      if (closingBraceIndex !== -1) {
+        if (literalBuffer) {
+          tokens.push({ type: "literal", value: literalBuffer });
+          literalBuffer = "";
+        }
+
+        tokens.push({ type: "param" });
+        index = closingBraceIndex;
+        continue;
+      }
+    }
+
+    literalBuffer += char;
+  }
+
+  if (literalBuffer) {
+    tokens.push({ type: "literal", value: literalBuffer });
+  }
+
+  return tokens;
+}
+
 /**
  * Match a resource URI against a pattern template.
  */
 export function matchResourcePattern(pattern: string, resource: string): boolean {
-  const regexStr = pattern.replace(/{[^}]+}/g, "[^:/]+").replace(/\*/g, ".*");
-  const regex = new RegExp(`^${regexStr}$`);
-  return regex.test(resource);
+  const tokens = tokenizeResourcePattern(pattern);
+  const memo = new Map<string, boolean>();
+
+  const matches = (tokenIndex: number, resourceIndex: number): boolean => {
+    const memoKey = `${tokenIndex}:${resourceIndex}`;
+    const memoized = memo.get(memoKey);
+    if (memoized !== undefined) {
+      return memoized;
+    }
+
+    if (tokenIndex === tokens.length) {
+      const isMatch = resourceIndex === resource.length;
+      memo.set(memoKey, isMatch);
+      return isMatch;
+    }
+
+    const token = tokens[tokenIndex];
+
+    if (token.type === "literal") {
+      const isMatch = resource.startsWith(token.value, resourceIndex)
+        ? matches(tokenIndex + 1, resourceIndex + token.value.length)
+        : false;
+      memo.set(memoKey, isMatch);
+      return isMatch;
+    }
+
+    if (token.type === "param") {
+      let nextIndex = resourceIndex;
+      let isMatch = false;
+
+      while (
+        nextIndex < resource.length &&
+        resource[nextIndex] !== ":" &&
+        resource[nextIndex] !== "/"
+      ) {
+        nextIndex += 1;
+        if (matches(tokenIndex + 1, nextIndex)) {
+          isMatch = true;
+          break;
+        }
+      }
+
+      memo.set(memoKey, isMatch);
+      return isMatch;
+    }
+
+    let isMatch = false;
+    for (let nextIndex = resourceIndex; nextIndex <= resource.length; nextIndex += 1) {
+      if (matches(tokenIndex + 1, nextIndex)) {
+        isMatch = true;
+        break;
+      }
+    }
+
+    memo.set(memoKey, isMatch);
+    return isMatch;
+  };
+
+  return matches(0, 0);
 }
