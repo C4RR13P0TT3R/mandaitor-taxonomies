@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.5.0...v1.6.0) (2026-04-21)
+
+
+### Features
+
+* **construction:** add punch-list triage mandate template ([ff9a1d6](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/ff9a1d67a150e5ea6e454c976e1e6dc3d2317108))
+* **construction:** add punch-list triage mandate template ([163d523](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/163d5238bb460f9a0d4df0a762373b902ca9fbed))
+
 ## [1.5.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.4.0...v1.5.0) (2026-04-20)
 
 
