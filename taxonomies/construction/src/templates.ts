@@ -162,4 +162,30 @@ export const CONSTRUCTION_TEMPLATES: TaxonomyMandateTemplate[] = [
     },
     delegateType: "AGENT",
   },
+  {
+    id: "construction.punch-list-triage",
+    name: "Construction Punch-List Triage",
+    description:
+      "Delegate zone-level punch-list triage, defect capture, and follow-up documentation to a construction quality agent",
+    vertical: "construction",
+    scope: {
+      actions: [
+        "construction.validation.flag",
+        "construction.defect.create",
+        "construction.documentation.generate",
+      ],
+      resourcePatterns: ["project-zone", "project-defect"],
+      effect: "ALLOW",
+    },
+    constraints: {
+      time: { defaultDuration: "P90D" },
+      rateLimits: { max_defects_per_day: 50, max_documents_per_day: 25 },
+      escalationRules: {
+        repeated_findings_above: 10,
+        escalate_to: "site_manager",
+        escalation_method: "NOTIFY",
+      },
+    },
+    delegateType: "AGENT",
+  },
 ];
