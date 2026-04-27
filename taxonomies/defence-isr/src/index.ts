@@ -9,11 +9,13 @@ import { DEFENCE_ACTIONS } from "./actions.js";
 import { DEFENCE_RESOURCES } from "./resources.js";
 import { DEFENCE_CONSTRAINTS } from "./constraints.js";
 import { DEFENCE_TEMPLATES } from "./templates.js";
+import { DEFENCE_ISR_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 export { DEFENCE_ACTIONS } from "./actions.js";
 export { DEFENCE_RESOURCES } from "./resources.js";
 export { DEFENCE_CONSTRAINTS } from "./constraints.js";
 export { DEFENCE_TEMPLATES } from "./templates.js";
+export { DEFENCE_ISR_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 /**
  * The complete defence and ISR taxonomy.
@@ -40,6 +42,7 @@ export const defenceIsrTaxonomy: IndustryTaxonomy = {
   resourcePatterns: DEFENCE_RESOURCES,
   constraintTemplates: DEFENCE_CONSTRAINTS,
   mandateTemplates: DEFENCE_TEMPLATES,
+  semanticGraph: DEFENCE_ISR_SEMANTIC_GRAPH as any,
 };
 
 export default defenceIsrTaxonomy;

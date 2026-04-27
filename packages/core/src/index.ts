@@ -39,3 +39,19 @@ export {
   allRiskLabels,
   supportedLocales,
 } from "./risk-labels.js";
+
+// @experimental — Semantic Graph (Drift Detection & Semantic Verification)
+export type {
+  ActionRelationship,
+  RelationshipType,
+  SemanticGraph,
+  ActionCluster,
+  SemanticDistanceResult,
+  ConflictResult,
+} from "./semantic-types.js";
+
+export {
+  SemanticGraphEngine,
+  inferSemanticGraph,
+  validateSemanticGraph,
+} from "./semantic-graph.js";

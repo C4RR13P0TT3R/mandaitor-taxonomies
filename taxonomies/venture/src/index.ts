@@ -1,43 +1,45 @@
-// @mandaitor/taxonomy-venture — Venture, Startups & Investment Decisioning taxonomy
+// @mandaitor/taxonomy-venture — Venture industry taxonomy
 //
-// This taxonomy covers founder-investor workflows across deal sourcing,
-// opportunity screening, diligence coordination, investment governance,
-// fundraising support, and portfolio monitoring.
+// This taxonomy covers founder and investor workflows:
+// sourcing, screening, diligence, investment decisioning, and portfolio follow-up.
 
 import type { IndustryTaxonomy } from "@mandaitor/taxonomy-core";
 import { VENTURE_ACTIONS } from "./actions.js";
 import { VENTURE_RESOURCES } from "./resources.js";
 import { VENTURE_CONSTRAINTS } from "./constraints.js";
 import { VENTURE_TEMPLATES } from "./templates.js";
+import { VENTURE_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 export { VENTURE_ACTIONS } from "./actions.js";
 export { VENTURE_RESOURCES } from "./resources.js";
 export { VENTURE_CONSTRAINTS } from "./constraints.js";
 export { VENTURE_TEMPLATES } from "./templates.js";
+export { VENTURE_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 export const ventureTaxonomy: IndustryTaxonomy = {
   metadata: {
     id: "venture",
     version: "1.0.0",
-    name: "Venture, Startups & Investment Decisioning",
+    name: "Venture Capital & Startups",
     description:
-      "Industry taxonomy for venture, founder, and investor workflows covering opportunity screening, startup diligence, investment memo preparation, fundraising coordination, and portfolio monitoring. Designed as a reusable delegation baseline for accelerator, venture studio, and early-stage investment contexts.",
+      "Industry taxonomy for venture capital covering deal flow, screening, diligence, investment decisioning, founder support, and portfolio monitoring. Designed for founder and investor agentic workflows.",
     maintainers: [
       {
-        name: "Mandaitor Core Team",
+        name: "Mandaitor Community",
         url: "https://github.com/C4RR13P0TT3R/mandaitor-taxonomies",
       },
     ],
     license: "Apache-2.0",
     coreVersion: "0.1.0",
     tags: ["venture", "startup", "investment", "fundraising", "portfolio", "agentic-ai"],
-    documentationUrl: "https://docs.mandaitor.io",
+    documentationUrl: "https://trust.mandaitor.io",
     standardUrl: "https://southstarter.com",
   },
   actions: VENTURE_ACTIONS,
   resourcePatterns: VENTURE_RESOURCES,
   constraintTemplates: VENTURE_CONSTRAINTS,
   mandateTemplates: VENTURE_TEMPLATES,
+  semanticGraph: VENTURE_SEMANTIC_GRAPH as any,
 };
 
 export default ventureTaxonomy;

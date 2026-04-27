@@ -1,0 +1,142 @@
+// @mandaitor/taxonomy-defence-isr — Explicit semantic graph
+// @experimental
+
+import type { ActionRelationship, SemanticGraph, ActionCluster } from "@mandaitor/taxonomy-core";
+
+export const DEFENCE_ISR_SEMANTIC_GRAPH: Partial<SemanticGraph> = {
+  taxonomyId: "defence-isr",
+  edges: [
+    {
+      from: "defence.intelligence.analyze_imagery",
+      to: "defence.intelligence.classify_target",
+      type: "PRECEDES",
+      weight: 0.8,
+      bidirectional: false,
+      rationale: "Bildanalyse geht der Zielklassifizierung voraus, um Objekte von Interesse zu identifizieren.",
+    },
+    {
+      from: "defence.intelligence.classify_target",
+      to: "defence.authorization.verify_pid",
+      type: "PRECEDES",
+      weight: 0.9,
+      bidirectional: false,
+      rationale: "Die Klassifizierung eines Ziels ist eine Voraussetzung für die Überprüfung der positiven Identifizierung (PID).",
+    },
+    {
+      from: "defence.authorization.verify_pid",
+      to: "defence.authorization.recommend",
+      type: "PRECEDES",
+      weight: 1.0,
+      bidirectional: false,
+      rationale: "Die Überprüfung der positiven Identifizierung (PID) muss abgeschlossen sein, bevor eine Empfehlung zur Bekämpfung abgegeben werden kann.",
+    },
+    {
+      from: "defence.authorization.recommend",
+      to: "defence.bda.assess",
+      type: "PRECEDES",
+      weight: 0.7,
+      bidirectional: false,
+      rationale: "Nach einer Empfehlung zur Bekämpfung folgt in der Regel eine Wirkungsanalyse (Battle Damage Assessment).",
+    },
+    {
+      from: "defence.sensor.task_platform",
+      to: "defence.intelligence.analyze_imagery",
+      type: "PRECEDES",
+      weight: 0.8,
+      bidirectional: false,
+      rationale: "Die Beauftragung einer Sensorplattform ist erforderlich, um Bilder für die Analyse zu sammeln.",
+    },
+    {
+      from: "defence.intelligence.fuse_multi_source_data",
+      to: "defence.intelligence.generate_report",
+      type: "PRECEDES",
+      weight: 0.9,
+      bidirectional: false,
+      rationale: "Die Zusammenführung von Daten aus mehreren Quellen ist ein notwendiger Schritt vor der Erstellung eines umfassenden Geheimdienstberichts.",
+    },
+    {
+      from: "defence.intelligence.generate_report",
+      to: "defence.comms.disseminate",
+      type: "PRECEDES",
+      weight: 1.0,
+      bidirectional: false,
+      rationale: "Ein Geheimdienstbericht muss erstellt werden, bevor er verbreitet werden kann.",
+    },
+    {
+      from: "defence.mission.plan",
+      to: "defence.intelligence.generate_report",
+      type: "REQUIRES",
+      weight: 0.6,
+      bidirectional: false,
+      rationale: "Die Missionsplanung erfordert oft aktuelle Geheimdienstberichte, um effektiv zu sein.",
+    },
+    {
+      from: "defence.authorization.recommend",
+      to: "defence.mission.update_status",
+      type: "CONFLICTS",
+      weight: 0.5,
+      bidirectional: true,
+      rationale: "Eine Empfehlung zur Bekämpfung kann im Widerspruch zur einfachen Aktualisierung des Missionsstatus stehen, da sie eine Eskalation darstellt.",
+    },
+    {
+      from: "defence.intelligence.classify_target",
+      to: "defence.comms.send_alert",
+      type: "ESCALATES_TO",
+      weight: 0.7,
+      bidirectional: false,
+      rationale: "Die Klassifizierung eines hochwertigen oder bedrohlichen Ziels kann die sofortige Aussendung einer Warnung auslösen.",
+    },
+    {
+      from: "defence.sensor.adjust_parameters",
+      to: "defence.sensor.task_platform",
+      type: "PRECEDES",
+      weight: 0.5,
+      bidirectional: false,
+      rationale: "Die Anpassung der Sensorparameter erfolgt häufig vor der Beauftragung der Plattform, um die Datenerfassung zu optimieren.",
+    },
+    {
+      from: "defence.bda.assess",
+      to: "defence.mission.update_status",
+      type: "PRECEDES",
+      weight: 0.8,
+      bidirectional: false,
+      rationale: "Die Ergebnisse der Wirkungsanalyse (BDA) fließen in die Aktualisierung des Missionsstatus ein.",
+    },
+  ],
+  clusters: [
+    {
+      id: "defence-isr.tasking-collection",
+      name: "ISR Tasking & Collection",
+      description: "Fokussiert auf die Beauftragung von Sensoren und die Sammlung von Daten zur Erstellung eines Lagebildes.",
+      actionIds: [
+        "defence.sensor.task_platform",
+        "defence.sensor.adjust_parameters",
+        "defence.intelligence.analyze_imagery",
+      ],
+      domain: "ISR Operations",
+    },
+    {
+      id: "defence-isr.intelligence-production",
+      name: "Intelligence Production",
+      description: "Fokussiert auf die Analyse von Rohdaten, die Zusammenführung von Informationen und die Erstellung von umsetzbaren Geheimdienstprodukten.",
+      actionIds: [
+        "defence.intelligence.fuse_multi_source_data",
+        "defence.intelligence.generate_report",
+        "defence.comms.disseminate",
+      ],
+      domain: "Intelligence Analysis",
+    },
+    {
+      id: "defence-isr.targeting-engagement",
+      name: "Targeting & Engagement",
+      description: "Umfasst den Zyklus der Identifizierung, Überprüfung, Autorisierung und Bewertung von Zielen.",
+      actionIds: [
+        "defence.intelligence.classify_target",
+        "defence.authorization.verify_pid",
+        "defence.authorization.recommend",
+        "defence.bda.assess",
+      ],
+      domain: "Targeting",
+    },
+  ],
+};
