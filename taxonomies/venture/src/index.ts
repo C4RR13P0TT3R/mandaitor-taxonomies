@@ -1,7 +1,8 @@
-// @mandaitor/taxonomy-venture — Venture industry taxonomy
+// @mandaitor/taxonomy-venture — Venture, Startups & Investment Decisioning taxonomy
 //
-// This taxonomy covers founder and investor workflows:
-// sourcing, screening, diligence, investment decisioning, and portfolio follow-up.
+// This taxonomy covers founder-investor workflows across deal sourcing,
+// opportunity screening, diligence coordination, investment governance,
+// fundraising support, and portfolio monitoring.
 
 import type { IndustryTaxonomy } from "@mandaitor/taxonomy-core";
 import { VENTURE_ACTIONS } from "./actions.js";
@@ -20,26 +21,26 @@ export const ventureTaxonomy: IndustryTaxonomy = {
   metadata: {
     id: "venture",
     version: "1.0.0",
-    name: "Venture Capital & Startups",
+    name: "Venture, Startups & Investment Decisioning",
     description:
-      "Industry taxonomy for venture capital covering deal flow, screening, diligence, investment decisioning, founder support, and portfolio monitoring. Designed for founder and investor agentic workflows.",
+      "Industry taxonomy for venture, founder, and investor workflows covering opportunity screening, startup diligence, investment memo preparation, fundraising coordination, and portfolio monitoring. Designed as a reusable delegation baseline for accelerator, venture studio, and early-stage investment contexts.",
     maintainers: [
       {
-        name: "Mandaitor Community",
+        name: "Mandaitor Core Team",
         url: "https://github.com/C4RR13P0TT3R/mandaitor-taxonomies",
       },
     ],
     license: "Apache-2.0",
     coreVersion: "0.1.0",
     tags: ["venture", "startup", "investment", "fundraising", "portfolio", "agentic-ai"],
-    documentationUrl: "https://trust.mandaitor.io",
+    documentationUrl: "https://docs.mandaitor.io",
     standardUrl: "https://southstarter.com",
   },
   actions: VENTURE_ACTIONS,
   resourcePatterns: VENTURE_RESOURCES,
   constraintTemplates: VENTURE_CONSTRAINTS,
   mandateTemplates: VENTURE_TEMPLATES,
-  semanticGraph: VENTURE_SEMANTIC_GRAPH as any,
+  semanticGraph: VENTURE_SEMANTIC_GRAPH,
 };
 
 export default ventureTaxonomy;
