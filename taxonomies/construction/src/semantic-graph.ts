@@ -3,8 +3,9 @@
 
 import type { ActionRelationship, SemanticGraph, ActionCluster } from "@mandaitor/taxonomy-core";
 
-export const CONSTRUCTION_SEMANTIC_GRAPH: Partial<SemanticGraph> = {
+export const CONSTRUCTION_SEMANTIC_GRAPH: SemanticGraph = {
   taxonomyId: "construction",
+  schemaVersion: "1.0.0",
   edges: [
     {
       from: "construction.validation.flag",

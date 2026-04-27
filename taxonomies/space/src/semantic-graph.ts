@@ -3,8 +3,9 @@
 
 import type { ActionRelationship, SemanticGraph, ActionCluster } from "@mandaitor/taxonomy-core";
 
-export const SPACE_SEMANTIC_GRAPH: Partial<SemanticGraph> = {
+export const SPACE_SEMANTIC_GRAPH: SemanticGraph = {
   taxonomyId: "space",
+  schemaVersion: "1.0.0",
   edges: [
     {
       from: "space.mission.plan_contact_window",

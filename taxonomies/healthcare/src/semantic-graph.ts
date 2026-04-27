@@ -3,8 +3,9 @@
 
 import type { ActionRelationship, SemanticGraph, ActionCluster } from "@mandaitor/taxonomy-core";
 
-export const HEALTHCARE_SEMANTIC_GRAPH: Partial<SemanticGraph> = {
+export const HEALTHCARE_SEMANTIC_GRAPH: SemanticGraph = {
   taxonomyId: "healthcare",
+  schemaVersion: "1.0.0",
   edges: [
     {
       from: "healthcare.document.create_letter",

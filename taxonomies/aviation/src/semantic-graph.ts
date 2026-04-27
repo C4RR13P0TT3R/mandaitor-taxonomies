@@ -3,8 +3,9 @@
 
 import type { ActionRelationship, SemanticGraph, ActionCluster } from "@mandaitor/taxonomy-core";
 
-export const AVIATION_SEMANTIC_GRAPH: Partial<SemanticGraph> = {
+export const AVIATION_SEMANTIC_GRAPH: SemanticGraph = {
   taxonomyId: "aviation",
+  schemaVersion: "1.0.0",
   clusters: [
     {
       id: "aviation.workflow.dispatch-planning",

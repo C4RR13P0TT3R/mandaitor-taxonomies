@@ -3,8 +3,9 @@
 
 import type { ActionRelationship, SemanticGraph, ActionCluster } from "@mandaitor/taxonomy-core";
 
-export const MARITIME_SEMANTIC_GRAPH: Partial<SemanticGraph> = {
+export const MARITIME_SEMANTIC_GRAPH: SemanticGraph = {
   taxonomyId: "maritime",
+  schemaVersion: "1.0.0",
   edges: [
     {
       from: "maritime.vts.sequence_arrival_slot",

@@ -3,8 +3,9 @@
 
 import type { ActionRelationship, SemanticGraph, ActionCluster } from "@mandaitor/taxonomy-core";
 
-export const VENTURE_SEMANTIC_GRAPH: Partial<SemanticGraph> = {
+export const VENTURE_SEMANTIC_GRAPH: SemanticGraph = {
   taxonomyId: "venture",
+  schemaVersion: "1.0.0",
   edges: [
     {
       from: "venture.deal.screen",

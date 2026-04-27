@@ -3,8 +3,9 @@
 
 import type { ActionRelationship, SemanticGraph, ActionCluster } from "@mandaitor/taxonomy-core";
 
-export const DEFENCE_ISR_SEMANTIC_GRAPH: Partial<SemanticGraph> = {
+export const DEFENCE_ISR_SEMANTIC_GRAPH: SemanticGraph = {
   taxonomyId: "defence-isr",
+  schemaVersion: "1.0.0",
   edges: [
     {
       from: "defence.intelligence.analyze_imagery",

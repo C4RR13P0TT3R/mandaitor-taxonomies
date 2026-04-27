@@ -3,8 +3,9 @@
 
 import type { ActionRelationship, SemanticGraph, ActionCluster } from "@mandaitor/taxonomy-core";
 
-export const REALESTATE_SEMANTIC_GRAPH: Partial<SemanticGraph> = {
+export const REALESTATE_SEMANTIC_GRAPH: SemanticGraph = {
   taxonomyId: "realestate",
+  schemaVersion: "1.0.0",
   edges: [
     {
       from: "realestate.document.classify",
