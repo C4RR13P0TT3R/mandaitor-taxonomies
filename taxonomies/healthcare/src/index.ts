@@ -9,11 +9,13 @@ import { HEALTHCARE_ACTIONS } from "./actions.js";
 import { HEALTHCARE_RESOURCES } from "./resources.js";
 import { HEALTHCARE_CONSTRAINTS } from "./constraints.js";
 import { HEALTHCARE_TEMPLATES } from "./templates.js";
+import { HEALTHCARE_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 export { HEALTHCARE_ACTIONS } from "./actions.js";
 export { HEALTHCARE_RESOURCES } from "./resources.js";
 export { HEALTHCARE_CONSTRAINTS } from "./constraints.js";
 export { HEALTHCARE_TEMPLATES } from "./templates.js";
+export { HEALTHCARE_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 /**
  * The complete healthcare industry taxonomy.
@@ -40,6 +42,7 @@ export const healthcareTaxonomy: IndustryTaxonomy = {
   resourcePatterns: HEALTHCARE_RESOURCES,
   constraintTemplates: HEALTHCARE_CONSTRAINTS,
   mandateTemplates: HEALTHCARE_TEMPLATES,
+  semanticGraph: HEALTHCARE_SEMANTIC_GRAPH as any,
 };
 
 export default healthcareTaxonomy;

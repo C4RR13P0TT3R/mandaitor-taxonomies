@@ -9,11 +9,13 @@ import { AVIATION_ACTIONS } from "./actions.js";
 import { AVIATION_RESOURCES } from "./resources.js";
 import { AVIATION_CONSTRAINTS } from "./constraints.js";
 import { AVIATION_TEMPLATES } from "./templates.js";
+import { AVIATION_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 export { AVIATION_ACTIONS } from "./actions.js";
 export { AVIATION_RESOURCES } from "./resources.js";
 export { AVIATION_CONSTRAINTS } from "./constraints.js";
 export { AVIATION_TEMPLATES } from "./templates.js";
+export { AVIATION_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 export const aviationTaxonomy: IndustryTaxonomy = {
   metadata: {
@@ -38,6 +40,7 @@ export const aviationTaxonomy: IndustryTaxonomy = {
   resourcePatterns: AVIATION_RESOURCES,
   constraintTemplates: AVIATION_CONSTRAINTS,
   mandateTemplates: AVIATION_TEMPLATES,
+  semanticGraph: AVIATION_SEMANTIC_GRAPH as any,
 };
 
 export default aviationTaxonomy;
