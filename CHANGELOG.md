@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.1](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.7.0...v1.7.1) (2026-04-29)
+
+
+### Bug Fixes
+
+* resolve security vulnerabilities (postcss XSS, esbuild CORS, vite path traversal) ([7456323](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/74563238f02adcdd43a06f7ba18be8c2e5bff582))
+* resolve security vulnerabilities (postcss, esbuild, vite) ([0cb60ad](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/0cb60add26a0dcb50734f49deeae6c8cac604ffc))
+
 ## [1.7.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.6.0...v1.7.0) (2026-04-29)
 
 
