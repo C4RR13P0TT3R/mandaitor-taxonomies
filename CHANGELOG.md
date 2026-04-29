@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.7.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.6.0...v1.7.0) (2026-04-29)
+
+
+### Features
+
+* add semantic graph engine and per-taxonomy semantic graphs ([b53f27e](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/b53f27e2881c5da38eab8132df797b819a11220b))
+* Semantic Graph Engine & Per-Taxonomy Graphs (Experimental) ([e7b9dc8](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/e7b9dc831f5a2c25b9fd1a9546239388658f1b9a))
+
+
+### Bug Fixes
+
+* remediate validator ReDoS and upgrade vitest stack ([771fc6c](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/771fc6c5ee023ac609d456d4ffa3b6745d686964))
+* restore original venture taxonomy metadata ([2d0593c](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/2d0593c5a138ff992557fbff8e0d5545841170b6))
+* use SemanticGraph type instead of Partial&lt;SemanticGraph&gt; ([2d2fe21](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/2d2fe21983f591daae317bfd57bc4aad5e014913))
+
 ## [1.6.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.5.0...v1.6.0) (2026-04-21)
 
 
