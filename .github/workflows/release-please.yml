@@ -13,7 +13,7 @@ jobs:
     name: Create Release PR
     runs-on: ubuntu-latest
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
         with:
           token: ${{ secrets.CROSS_REPO_TOKEN || secrets.GITHUB_TOKEN }}
           release-type: node

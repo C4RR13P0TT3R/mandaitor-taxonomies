@@ -9,11 +9,13 @@ import { VENTURE_ACTIONS } from "./actions.js";
 import { VENTURE_RESOURCES } from "./resources.js";
 import { VENTURE_CONSTRAINTS } from "./constraints.js";
 import { VENTURE_TEMPLATES } from "./templates.js";
+import { VENTURE_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 export { VENTURE_ACTIONS } from "./actions.js";
 export { VENTURE_RESOURCES } from "./resources.js";
 export { VENTURE_CONSTRAINTS } from "./constraints.js";
 export { VENTURE_TEMPLATES } from "./templates.js";
+export { VENTURE_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 export const ventureTaxonomy: IndustryTaxonomy = {
   metadata: {
@@ -38,6 +40,7 @@ export const ventureTaxonomy: IndustryTaxonomy = {
   resourcePatterns: VENTURE_RESOURCES,
   constraintTemplates: VENTURE_CONSTRAINTS,
   mandateTemplates: VENTURE_TEMPLATES,
+  semanticGraph: VENTURE_SEMANTIC_GRAPH,
 };
 
 export default ventureTaxonomy;

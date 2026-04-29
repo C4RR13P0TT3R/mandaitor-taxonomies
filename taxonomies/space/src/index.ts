@@ -9,11 +9,13 @@ import { SPACE_ACTIONS } from "./actions.js";
 import { SPACE_RESOURCES } from "./resources.js";
 import { SPACE_CONSTRAINTS } from "./constraints.js";
 import { SPACE_TEMPLATES } from "./templates.js";
+import { SPACE_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 export { SPACE_ACTIONS } from "./actions.js";
 export { SPACE_RESOURCES } from "./resources.js";
 export { SPACE_CONSTRAINTS } from "./constraints.js";
 export { SPACE_TEMPLATES } from "./templates.js";
+export { SPACE_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 export const spaceTaxonomy: IndustryTaxonomy = {
   metadata: {
@@ -44,6 +46,7 @@ export const spaceTaxonomy: IndustryTaxonomy = {
   resourcePatterns: SPACE_RESOURCES,
   constraintTemplates: SPACE_CONSTRAINTS,
   mandateTemplates: SPACE_TEMPLATES,
+  semanticGraph: SPACE_SEMANTIC_GRAPH as any,
 };
 
 export default spaceTaxonomy;

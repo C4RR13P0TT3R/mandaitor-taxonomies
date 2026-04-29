@@ -1,0 +1,132 @@
+// @mandaitor/taxonomy-construction — Explicit semantic graph
+// @experimental
+
+import type { ActionRelationship, SemanticGraph, ActionCluster } from "@mandaitor/taxonomy-core";
+
+export const CONSTRUCTION_SEMANTIC_GRAPH: SemanticGraph = {
+  taxonomyId: "construction",
+  schemaVersion: "1.0.0",
+  edges: [
+    {
+      from: "construction.validation.flag",
+      to: "construction.validation.reject",
+      type: "PRECEDES",
+      weight: 0.7,
+      bidirectional: false,
+      rationale: "In a typical quality control workflow, an issue is first flagged before a formal rejection is issued.",
+    },
+    {
+      from: "construction.validation.reject",
+      to: "construction.validation.request_recheck",
+      type: "PRECEDES",
+      weight: 0.8,
+      bidirectional: false,
+      rationale: "After a non-conforming installation is rejected, a re-check is the logical next step to verify remediation.",
+    },
+    {
+      from: "construction.validation.flag",
+      to: "construction.validation.request_change",
+      type: "PRECEDES",
+      weight: 0.5,
+      bidirectional: false,
+      rationale: "A flagged issue, if systemic, can lead to a formal request for a plan change to prevent recurrence.",
+    },
+    {
+      from: "construction.procurement.compare_quotes",
+      to: "construction.procurement.create_order",
+      type: "PRECEDES",
+      weight: 0.9,
+      bidirectional: false,
+      rationale: "Comparing supplier quotes is a standard prerequisite before creating a purchase order to ensure cost-effectiveness.",
+    },
+    {
+      from: "construction.cost.flag_deviation",
+      to: "construction.safety.halt",
+      type: "ESCALATES_TO",
+      weight: 0.4,
+      bidirectional: false,
+      rationale: "A significant cost deviation could indicate underlying issues like use of substandard materials, which may escalate to a safety-critical situation requiring work to be halted.",
+    },
+    {
+      from: "construction.validation.approve",
+      to: "construction.validation.reject",
+      type: "CONFLICTS",
+      weight: 1.0,
+      bidirectional: true,
+      rationale: "Approving and rejecting the same validation are mutually exclusive actions.",
+    },
+    {
+      from: "construction.defect.create",
+      to: "construction.validation.request_recheck",
+      type: "PRECEDES",
+      weight: 0.6,
+      bidirectional: false,
+      rationale: "The creation of a defect report naturally leads to a request for a re-check to validate the defect and its remediation.",
+    },
+    {
+      from: "construction.documentation.generate",
+      to: "construction.handover.prepare",
+      type: "PRECEDES",
+      weight: 0.9,
+      bidirectional: false,
+      rationale: "All project documentation must be generated and compiled before the final handover package can be prepared.",
+    },
+    {
+      from: "construction.scheduling.update",
+      to: "construction.validation.approve",
+      type: "REQUIRES",
+      weight: 0.7,
+      bidirectional: false,
+      rationale: "Major schedule updates are often contingent on the formal approval of preceding validation milestones.",
+    },
+    {
+      from: "construction.cost.approve_invoice",
+      to: "construction.procurement.create_order",
+      type: "REQUIRES",
+      weight: 0.9,
+      bidirectional: false,
+      rationale: "Invoice approval requires a corresponding purchase order to exist for verification against the original procurement terms.",
+    },
+    {
+      from: "construction.validation.request_change",
+      to: "construction.scheduling.update",
+      type: "ESCALATES_TO",
+      weight: 0.8,
+      bidirectional: false,
+      rationale: "A requested plan change almost always necessitates an update to the project schedule to reflect the new scope or timeline.",
+    },
+  ],
+  clusters: [
+    {
+      id: "construction.quality-assurance",
+      name: "Quality Assurance Workflow",
+      description: "A cluster of actions related to the quality assurance and defect management lifecycle in construction.",
+      actionIds: [
+        "construction.validation.flag",
+        "construction.validation.reject",
+        "construction.validation.request_recheck",
+        "construction.defect.create",
+      ],
+      domain: "quality",
+    },
+    {
+      id: "construction.procurement-cost-control",
+      name: "Procurement and Cost Control",
+      description: "Actions governing the financial and procurement aspects of a construction project, from ordering materials to approving payments.",
+      actionIds: [
+        "construction.procurement.compare_quotes",
+        "construction.procurement.create_order",
+        "construction.cost.approve_invoice",
+        "construction.cost.flag_deviation",
+      ],
+      domain: "finance",
+    },
+    {
+      id: "construction.project-completion",
+      name: "Project Completion",
+      description: "Actions related to the final phases of a construction project, including documentation and formal handover.",
+      actionIds: ["construction.documentation.generate", "construction.handover.prepare"],
+      domain: "project-management",
+    },
+  ],
+};
