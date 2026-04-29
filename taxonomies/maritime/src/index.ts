@@ -5,11 +5,13 @@ import { MARITIME_ACTIONS } from "./actions.js";
 import { MARITIME_RESOURCES } from "./resources.js";
 import { MARITIME_CONSTRAINTS } from "./constraints.js";
 import { MARITIME_TEMPLATES } from "./templates.js";
+import { MARITIME_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 export { MARITIME_ACTIONS } from "./actions.js";
 export { MARITIME_RESOURCES } from "./resources.js";
 export { MARITIME_CONSTRAINTS } from "./constraints.js";
 export { MARITIME_TEMPLATES } from "./templates.js";
+export { MARITIME_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 export const maritimeTaxonomy: IndustryTaxonomy = {
   metadata: {
@@ -29,6 +31,7 @@ export const maritimeTaxonomy: IndustryTaxonomy = {
   resourcePatterns: MARITIME_RESOURCES,
   constraintTemplates: MARITIME_CONSTRAINTS,
   mandateTemplates: MARITIME_TEMPLATES,
+  semanticGraph: MARITIME_SEMANTIC_GRAPH as any,
 };
 
 export default maritimeTaxonomy;

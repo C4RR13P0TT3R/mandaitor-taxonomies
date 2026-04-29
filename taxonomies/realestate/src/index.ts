@@ -5,11 +5,13 @@ import { REALESTATE_ACTIONS } from "./actions.js";
 import { REALESTATE_RESOURCES } from "./resources.js";
 import { REALESTATE_CONSTRAINTS } from "./constraints.js";
 import { REALESTATE_TEMPLATES } from "./templates.js";
+import { REALESTATE_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 export { REALESTATE_ACTIONS } from "./actions.js";
 export { REALESTATE_RESOURCES } from "./resources.js";
 export { REALESTATE_CONSTRAINTS } from "./constraints.js";
 export { REALESTATE_TEMPLATES } from "./templates.js";
+export { REALESTATE_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 export const realestateTaxonomy: IndustryTaxonomy = {
   metadata: {
@@ -30,6 +32,7 @@ export const realestateTaxonomy: IndustryTaxonomy = {
   resourcePatterns: REALESTATE_RESOURCES,
   constraintTemplates: REALESTATE_CONSTRAINTS,
   mandateTemplates: REALESTATE_TEMPLATES,
+  semanticGraph: REALESTATE_SEMANTIC_GRAPH as any,
 };
 
 export default realestateTaxonomy;

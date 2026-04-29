@@ -9,11 +9,13 @@ import { CONSTRUCTION_ACTIONS } from "./actions.js";
 import { CONSTRUCTION_RESOURCES } from "./resources.js";
 import { CONSTRUCTION_CONSTRAINTS } from "./constraints.js";
 import { CONSTRUCTION_TEMPLATES } from "./templates.js";
+import { CONSTRUCTION_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 export { CONSTRUCTION_ACTIONS } from "./actions.js";
 export { CONSTRUCTION_RESOURCES } from "./resources.js";
 export { CONSTRUCTION_CONSTRAINTS } from "./constraints.js";
 export { CONSTRUCTION_TEMPLATES } from "./templates.js";
+export { CONSTRUCTION_SEMANTIC_GRAPH } from "./semantic-graph.js";
 
 /**
  * The complete construction industry taxonomy.
@@ -41,6 +43,7 @@ export const constructionTaxonomy: IndustryTaxonomy = {
   resourcePatterns: CONSTRUCTION_RESOURCES,
   constraintTemplates: CONSTRUCTION_CONSTRAINTS,
   mandateTemplates: CONSTRUCTION_TEMPLATES,
+  semanticGraph: CONSTRUCTION_SEMANTIC_GRAPH as any,
 };
 
 export default constructionTaxonomy;

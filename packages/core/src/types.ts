@@ -136,6 +136,11 @@ export interface IndustryTaxonomy {
   constraintTemplates: TaxonomyConstraintTemplate[];
   /** All mandate templates */
   mandateTemplates: TaxonomyMandateTemplate[];
+  /**
+   * @experimental Semantic graph defining relationships between actions.
+   * When present, enables Drift Detection and Semantic Verification features.
+   */
+  semanticGraph?: import("./semantic-types.js").SemanticGraph;
 }
 
 export interface ValidationResult {
