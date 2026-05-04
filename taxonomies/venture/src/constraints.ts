@@ -75,4 +75,47 @@ export const VENTURE_CONSTRAINTS: TaxonomyConstraintTemplate[] = [
       maxRequestsPerHour: 12,
     },
   },
+  // ── New Constraints for Venture Taxonomy ────────────────
+  {
+    id: "venture.data.confidentiality",
+    name: "confidentiality-agreement",
+    description:
+      "Ensures that all data handling and sharing comply with confidentiality agreements and data privacy regulations.",
+    type: "ESCALATION",
+    schema: {
+      type: "object",
+      properties: {
+        agreementType: { type: "string" },
+        enforcementLevel: { type: "string" },
+        requireHumanReview: { type: "boolean" },
+      },
+      required: ["agreementType", "requireHumanReview"],
+    },
+    defaults: {
+      agreementType: "NDA",
+      enforcementLevel: "strict",
+      requireHumanReview: true,
+    },
+  },
+  {
+    id: "venture.compliance.esg-policy",
+    name: "esg-compliance-policy",
+    description:
+      "Defines the ESG compliance policy for investment due diligence and portfolio monitoring.",
+    type: "TRANSACTION",
+    schema: {
+      type: "object",
+      properties: {
+        policyVersion: { type: "string" },
+        auditFrequency: { type: "string" },
+        maxAmount: { type: "number" },
+      },
+      required: ["policyVersion", "maxAmount"],
+    },
+    defaults: {
+      policyVersion: "1.0",
+      auditFrequency: "annual",
+      maxAmount: 0,
+    },
+  }
 ];

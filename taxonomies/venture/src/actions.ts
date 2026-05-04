@@ -145,4 +145,50 @@ export const VENTURE_ACTIONS: TaxonomyAction[] = [
     requiresHumanApproval: false,
     tags: ["fundraising", "matching", "outreach"],
   },
+  // ── New Actions for Venture Taxonomy ────────────────────
+  {
+    id: "venture.portfolio.monitor_kpi",
+    label: "Monitor Portfolio Company KPIs",
+    description:
+      "Authorize AI agent to monitor key performance indicators of portfolio companies against set targets and benchmarks.",
+    riskLevel: "LOW",
+    requiresHumanApproval: false,
+    tags: ["portfolio", "monitoring", "kpi"],
+  },
+  {
+    id: "venture.reporting.lp_report",
+    label: "Generate LP Report",
+    description:
+      "Authorize AI agent to compile and generate reports for Limited Partners, summarizing fund performance and portfolio updates.",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: true,
+    tags: ["reporting", "lp", "investor"],
+  },
+  {
+    id: "venture.deal.sourcing_pipeline",
+    label: "Manage Deal Sourcing Pipeline",
+    description:
+      "Authorize AI agent to manage and update the deal sourcing pipeline, tracking potential investments from initial contact to due diligence.",
+    riskLevel: "LOW",
+    requiresHumanApproval: false,
+    tags: ["deal", "sourcing", "pipeline"],
+  },
+  {
+    id: "venture.board.prepare_meeting",
+    label: "Prepare Board Meeting Materials",
+    description:
+      "Authorize AI agent to prepare presentations, reports, and other materials for board meetings of portfolio companies.",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: true,
+    tags: ["board", "meeting", "preparation"],
+  },
+  {
+    id: "venture.diligence.esg_due_diligence",
+    label: "Perform ESG Due Diligence",
+    description:
+      "Authorize AI agent to conduct environmental, social, and governance (ESG) due diligence on potential investment opportunities.",
+    riskLevel: "HIGH",
+    requiresHumanApproval: false,
+    tags: ["diligence", "esg", "sustainability"],
+  }
 ];
