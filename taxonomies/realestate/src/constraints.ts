@@ -103,4 +103,42 @@ export const REALESTATE_CONSTRAINTS: TaxonomyConstraintTemplate[] = [
       requestsPerDay: 2000,
     },
   },
+  {
+    id: "realestate.data.privacy_compliance",
+    name: "Data Privacy Compliance",
+    description:
+      "Ensures that all data handling, especially tenant information, complies with relevant data privacy regulations (e.g., GDPR, CCPA).",
+    type: "ESCALATION",
+    schema: {
+      type: "object",
+      properties: {
+        jurisdiction: { type: "string" },
+        dataRetentionPeriod: { type: "string", format: "duration" },
+      },
+      required: ["jurisdiction"],
+    },
+    defaults: {
+      jurisdiction: "EU",
+      dataRetentionPeriod: "P7Y",
+    },
+  },
+  {
+    id: "realestate.reporting.data_retention",
+    name: "Reporting Data Retention Policy",
+    description:
+      "Defines the retention period for generated reports and underlying data to meet regulatory and internal policy requirements.",
+    type: "RATE_LIMIT",
+    schema: {
+      type: "object",
+      properties: {
+        reportType: { type: "string" },
+        retentionDays: { type: "number" },
+      },
+      required: ["reportType", "retentionDays"],
+    },
+    defaults: {
+      reportType: "all",
+      retentionDays: 365 * 5,
+    },
+  },
 ];
