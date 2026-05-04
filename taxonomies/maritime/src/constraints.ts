@@ -88,4 +88,48 @@ export const MARITIME_CONSTRAINTS: TaxonomyConstraintTemplate[] = [
       requiresAttachmentChecklist: true,
     },
   },
+  // ── New Constraints for Maritime Taxonomy ───────────────────
+  {
+    id: "maritime.crew.certification_validity",
+    name: "Crew Certification Validity",
+    description:
+      "Ensure that all crew members involved in a specific operation have valid and up-to-date certifications.",
+    type: "TRANSACTION",
+    schema: {
+      type: "object",
+      properties: {
+        requiredCertifications: {
+          type: "array",
+          items: { type: "string" },
+          minItems: 1,
+        },
+        gracePeriodDays: { type: "integer", minimum: 0 },
+      },
+      required: ["requiredCertifications"],
+      additionalProperties: false,
+    },
+    defaults: {
+      gracePeriodDays: 30,
+    },
+  },
+  {
+    id: "maritime.bunker.fuel_quality_check",
+    name: "Bunker Fuel Quality Check",
+    description:
+      "Mandate a quality check for bunker fuel before loading, ensuring it meets specified ISO standards.",
+    type: "TRANSACTION",
+    schema: {
+      type: "object",
+      properties: {
+        isoStandard: { type: "string" },
+        maxSulfurContent: { type: "number", minimum: 0 },
+      },
+      required: ["isoStandard", "maxSulfurContent"],
+      additionalProperties: false,
+    },
+    defaults: {
+      isoStandard: "ISO 8217",
+      maxSulfurContent: 0.5,
+    },
+  },
 ];
