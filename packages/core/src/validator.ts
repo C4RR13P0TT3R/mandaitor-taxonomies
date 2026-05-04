@@ -397,7 +397,7 @@ function validateConstraintTemplate(
   }
   seenIds.add(constraint.id);
 
-  if (!["TIME", "TRANSACTION", "ESCALATION", "RATE_LIMIT"].includes(constraint.type)) {
+  if (!["TIME", "TRANSACTION", "ESCALATION", "RATE_LIMIT", "RESOURCE_ACCESS", "DATA_POLICY", "GEOSPATIAL"].includes(constraint.type)) {
     errors.push({
       path: `${prefix}.type`,
       message: `Invalid constraint type: "${constraint.type}"`,
