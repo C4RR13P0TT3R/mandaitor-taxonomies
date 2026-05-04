@@ -115,4 +115,48 @@ export const VENTURE_TEMPLATES: TaxonomyMandateTemplate[] = [
     },
     delegateType: "AGENT",
   },
+  // ── New Mandate Templates for Venture Taxonomy ──────────
+  {
+    id: "venture.kpi-monitoring-and-reporting",
+    name: "KPI Monitoring and LP Reporting",
+    description:
+      "Template for continuous monitoring of portfolio company KPIs and automated generation of LP reports.",
+    vertical: "venture",
+    scope: {
+      actions: [
+        "venture.portfolio.monitor_kpi",
+        "venture.reporting.lp_report",
+        "venture.portfolio.flag_kpi_deviation",
+      ],
+      resourcePatterns: ["portfolio-company-data", "lp-reporting-data"],
+      effect: "ALLOW",
+    },
+    constraints: {
+      time: { defaultDuration: "P30D" },
+      escalationRules: { requireHumanReview: true, escalationChannel: "portfolio-manager", agreementType: "NDA", enforcementLevel: "strict" },
+    },
+    delegateType: "AGENT",
+  },
+  {
+    id: "venture.deal-sourcing-and-esg-diligence",
+    name: "Deal Sourcing and ESG Due Diligence",
+    description:
+      "Template for managing the deal sourcing pipeline and conducting ESG due diligence on potential investments.",
+    vertical: "venture",
+    scope: {
+      actions: [
+        "venture.deal.sourcing_pipeline",
+        "venture.diligence.esg_due_diligence",
+        "venture.deal.screen",
+      ],
+      resourcePatterns: ["deal-flow-data", "esg-data"],
+      effect: "ALLOW",
+    },
+    constraints: {
+      time: { defaultDuration: "P60D" },
+      escalationRules: { requireHumanReview: false },
+      transactionLimits: { policyVersion: "1.0", auditFrequency: "annual", maxAmount: 0 },
+    },
+    delegateType: "AGENT",
+  }
 ];

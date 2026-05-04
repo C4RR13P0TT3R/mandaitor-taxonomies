@@ -67,4 +67,41 @@ export const VENTURE_RESOURCES: TaxonomyResourcePattern[] = [
       { name: "interactionId", type: "string", description: "Interaction identifier", required: true },
     ],
   },
+  // ── New Resources for Venture Taxonomy ──────────────────
+  {
+    name: "portfolio-company-data",
+    pattern: "venture:portfolio:{companyId}/data/*",
+    description:
+      "Comprehensive data and metrics related to a specific portfolio company.",
+    parameters: [
+      { name: "companyId", type: "string", description: "Portfolio company identifier", required: true },
+    ],
+  },
+  {
+    name: "lp-reporting-data",
+    pattern: "venture:lp:{lpId}/report-data/*",
+    description:
+      "Data and documents specifically for Limited Partner reporting.",
+    parameters: [
+      { name: "lpId", type: "string", description: "Limited Partner identifier", required: true },
+    ],
+  },
+  {
+    name: "deal-flow-data",
+    pattern: "venture:deal-flow/{pipelineId}/data/*",
+    description:
+      "Data related to the deal sourcing pipeline and individual opportunities.",
+    parameters: [
+      { name: "pipelineId", type: "string", description: "Deal pipeline identifier", required: true },
+    ],
+  },
+  {
+    name: "esg-data",
+    pattern: "venture:esg/{esgReportId}/data/*",
+    description:
+      "Environmental, Social, and Governance (ESG) related data for due diligence and reporting.",
+    parameters: [
+      { name: "esgReportId", type: "string", description: "ESG report identifier", required: true },
+    ],
+  }
 ];
