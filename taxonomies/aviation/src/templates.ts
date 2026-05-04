@@ -82,4 +82,55 @@ export const AVIATION_TEMPLATES: TaxonomyMandateTemplate[] = [
     },
     delegateType: "AGENT",
   },
+  {
+    id: "aviation.crew-scheduling-assistant",
+    name: "Crew Scheduling Assistant",
+    description:
+      "Automates crew scheduling while ensuring compliance with rest requirements.",
+    vertical: "aviation",
+    scope: {
+      actions: [
+        "aviation.crew.schedule_crew",
+        "aviation.compliance.check_crew_currency",
+      ],
+      resourcePatterns: ["operator-crew-roster"],
+      effect: "ALLOW",
+      conditions: {
+        "aviation.compliance.crew-rest": {
+          minimum_rest_hours: 12,
+          require_manager_override: true,
+        },
+      },
+    },
+    constraints: {
+      time: { defaultDuration: "P180D" },
+    },
+    delegateType: "AGENT",
+  },
+  {
+    id: "aviation.flight-planning-assistant",
+    name: "Flight Planning Assistant",
+    description:
+      "Assists with flight planning, including fuel calculation and ETOPS monitoring.",
+    vertical: "aviation",
+    scope: {
+      actions: [
+        "aviation.planning.calculate_fuel_plan",
+        "aviation.monitoring.etops_compliance",
+        "aviation.dispatch.update_route_briefing",
+      ],
+      resourcePatterns: ["operator-flight"],
+      effect: "ALLOW",
+      conditions: {
+        "aviation.safety.weather-minimums": {
+          min_visibility_sm: 1,
+          max_crosswind_knots: 20,
+        },
+      },
+    },
+    constraints: {
+      time: { defaultDuration: "P7D" },
+    },
+    delegateType: "AGENT",
+  },
 ];
