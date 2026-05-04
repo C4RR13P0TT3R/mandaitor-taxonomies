@@ -1,148 +1,108 @@
-// @mandaitor/taxonomy-healthcare — Clinical workflow actions
-//
-// Actions cover clinical workflows inspired by the Avelios demo:
-// patient data access → documentation → prescriptions → discharge → telemedicine
-//
-// Naming convention: healthcare.{category}.{operation}
-
 import type { TaxonomyAction } from "@mandaitor/taxonomy-core";
 
 export const HEALTHCARE_ACTIONS: TaxonomyAction[] = [
-  // ── Patient Data Access ──────────────────────────────────
   {
     id: "healthcare.patient.read_record",
     label: "Read Patient Record",
-    description:
-      "Authorize AI agent to read patient medical records for clinical decision support",
-    riskLevel: "MEDIUM",
-    requiresHumanApproval: false,
-    tags: ["patient", "data-access", "clinical"],
+    description: "Authorize AI agent to read a patient's medical record",
+    riskLevel: "HIGH",
+    requiresHumanApproval: true,
+    tags: ["healthcare", "patient"]
   },
   {
     id: "healthcare.patient.read_summary",
     label: "Read Patient Summary",
-    description:
-      "Authorize AI agent to read patient summary (demographics, allergies, active medications)",
-    riskLevel: "LOW",
-    requiresHumanApproval: false,
-    tags: ["patient", "summary", "read-only"],
-  },
-  {
-    id: "healthcare.patient.update_record",
-    label: "Update Patient Record",
-    description:
-      "Authorize AI agent to update clinical notes and observations in patient records",
-    riskLevel: "HIGH",
-    requiresHumanApproval: true,
-    tags: ["patient", "data-write", "clinical"],
-  },
-
-  // ── Clinical Documentation ───────────────────────────────
-  {
-    id: "healthcare.documentation.draft_letter",
-    label: "Draft Clinical Letter",
-    description:
-      "Authorize AI agent to draft clinical letters (discharge summaries, referral letters, consultation reports)",
+    description: "Authorize AI agent to read a summarized version of a patient's record",
     riskLevel: "MEDIUM",
     requiresHumanApproval: false,
-    tags: ["documentation", "letter", "draft"],
+    tags: ["healthcare", "patient"]
   },
   {
-    id: "healthcare.documentation.send_letter",
-    label: "Send Clinical Letter",
-    description:
-      "Authorize AI agent to finalize and send clinical letters to recipients (physicians, patients, insurers)",
-    riskLevel: "HIGH",
-    requiresHumanApproval: true,
-    tags: ["documentation", "letter", "send", "communication"],
+    id: "healthcare.documentation.draft_letter",
+    label: "Draft Medical Letter",
+    description: "Authorize AI agent to draft a medical letter or report",
+    riskLevel: "LOW",
+    requiresHumanApproval: false,
+    tags: ["healthcare", "documentation"]
   },
   {
     id: "healthcare.documentation.generate_report",
-    label: "Generate Clinical Report",
-    description:
-      "Authorize AI agent to generate structured clinical reports (lab summaries, imaging reports)",
-    riskLevel: "LOW",
+    label: "Generate Report",
+    description: "Authorize AI agent to generate a medical report",
+    riskLevel: "MEDIUM",
     requiresHumanApproval: false,
-    tags: ["documentation", "report", "automation"],
+    tags: ["healthcare", "documentation"]
   },
-
-  // ── Prescriptions ────────────────────────────────────────
+  {
+    id: "healthcare.documentation.send_letter",
+    label: "Send Medical Letter",
+    description: "Authorize AI agent to send a medical letter to a patient or another doctor",
+    riskLevel: "HIGH",
+    requiresHumanApproval: true,
+    tags: ["healthcare", "documentation"]
+  },
   {
     id: "healthcare.prescription.suggest",
     label: "Suggest Prescription",
-    description:
-      "Authorize AI agent to suggest prescriptions based on clinical guidelines and patient history",
-    riskLevel: "MEDIUM",
-    requiresHumanApproval: false,
-    tags: ["prescription", "suggestion", "clinical-decision"],
+    description: "Authorize AI agent to suggest a prescription based on patient data",
+    riskLevel: "HIGH",
+    requiresHumanApproval: true,
+    tags: ["healthcare", "prescription"]
   },
   {
     id: "healthcare.prescription.issue",
     label: "Issue Prescription",
-    description:
-      "Authorize AI agent to issue prescriptions — requires physician co-signature in most jurisdictions",
+    description: "Authorize AI agent to issue a prescription",
     riskLevel: "CRITICAL",
     requiresHumanApproval: true,
-    tags: ["prescription", "issue", "regulated"],
+    tags: ["healthcare", "prescription"]
   },
-
-  // ── Discharge Management ─────────────────────────────────
   {
     id: "healthcare.discharge.prepare",
     label: "Prepare Discharge",
-    description:
-      "Authorize AI agent to compile discharge documentation including medication plan and follow-up instructions",
+    description: "Authorize AI agent to prepare discharge documents",
     riskLevel: "MEDIUM",
     requiresHumanApproval: false,
-    tags: ["discharge", "preparation", "documentation"],
+    tags: ["healthcare", "discharge"]
   },
   {
     id: "healthcare.discharge.approve",
     label: "Approve Discharge",
-    description:
-      "Authorize AI agent to approve patient discharge — requires attending physician confirmation",
+    description: "Authorize AI agent to approve a patient's discharge",
     riskLevel: "CRITICAL",
     requiresHumanApproval: true,
-    tags: ["discharge", "approval", "critical"],
+    tags: ["healthcare", "discharge"]
   },
-
-  // ── Scheduling & Triage ──────────────────────────────────
   {
     id: "healthcare.scheduling.book_appointment",
     label: "Book Appointment",
-    description:
-      "Authorize AI agent to book or reschedule patient appointments based on clinical priority",
+    description: "Authorize AI agent to book a medical appointment",
     riskLevel: "LOW",
     requiresHumanApproval: false,
-    tags: ["scheduling", "appointment", "automation"],
+    tags: ["healthcare", "scheduling"]
   },
   {
     id: "healthcare.triage.assess",
-    label: "Assess Triage Priority",
-    description:
-      "Authorize AI agent to assess and assign triage priority levels based on patient symptoms",
+    label: "Assess Triage",
+    description: "Authorize AI agent to perform initial triage assessment",
     riskLevel: "HIGH",
     requiresHumanApproval: true,
-    tags: ["triage", "assessment", "priority"],
+    tags: ["healthcare", "triage"]
   },
-
-  // ── Telemedicine ─────────────────────────────────────────
   {
     id: "healthcare.telemedicine.initiate_session",
     label: "Initiate Telemedicine Session",
-    description:
-      "Authorize AI agent to initiate and moderate telemedicine sessions with patients",
+    description: "Authorize AI agent to initiate a telemedicine session",
     riskLevel: "MEDIUM",
     requiresHumanApproval: false,
-    tags: ["telemedicine", "session", "communication"],
+    tags: ["healthcare", "telemedicine"]
   },
   {
     id: "healthcare.telemedicine.transcribe",
-    label: "Transcribe Consultation",
-    description:
-      "Authorize AI agent to transcribe and summarize telemedicine consultations into structured notes",
+    label: "Transcribe Telemedicine Session",
+    description: "Authorize AI agent to transcribe a telemedicine session",
     riskLevel: "LOW",
     requiresHumanApproval: false,
-    tags: ["telemedicine", "transcription", "automation"],
-  },
+    tags: ["healthcare", "telemedicine"]
+  }
 ];

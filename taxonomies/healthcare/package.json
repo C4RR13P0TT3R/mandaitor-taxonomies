@@ -1,7 +1,7 @@
 {
   "name": "@mandaitor/taxonomy-healthcare",
-  "version": "1.0.0",
-  "description": "Healthcare taxonomy for Mandaitor — clinical workflows including patient data access, documentation, prescriptions, discharge management, and telemedicine delegation",
+  "version": "0.1.0",
+  "description": "Healthcare & Life Sciences taxonomy for Mandaitor",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,9 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
@@ -29,7 +31,6 @@
     "mandaitor",
     "taxonomy",
     "healthcare",
-    "clinical",
     "delegation",
     "agentic-ai"
   ],
