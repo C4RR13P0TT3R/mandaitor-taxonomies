@@ -59,7 +59,7 @@ export interface TaxonomyConstraintTemplate {
   name: string;
   description: string;
   /** Type of constraint */
-  type: "TIME" | "TRANSACTION" | "ESCALATION" | "RATE_LIMIT";
+  type: "TIME" | "TRANSACTION" | "ESCALATION" | "RATE_LIMIT" | "RESOURCE_ACCESS" | "DATA_POLICY" | "GEOSPATIAL";
   /** The constraint schema (JSON Schema subset) */
   schema: Record<string, unknown>;
   /** Default values for this constraint */
@@ -91,6 +91,8 @@ export interface TaxonomyMandateTemplate {
     transactionLimits?: Record<string, unknown>;
     escalationRules?: Record<string, unknown>;
     rateLimits?: Record<string, unknown>;
+    geoRestrictions?: Record<string, unknown>;
+    orbitalAssetAccess?: Record<string, unknown>;
   };
   /** Required delegate type */
   delegateType: "AGENT" | "NATURAL_PERSON" | "LEGAL_ENTITY" | "ANY";

@@ -121,4 +121,54 @@ export const SPACE_TEMPLATES: TaxonomyMandateTemplate[] = [
     },
     delegateType: "AGENT",
   },
+  {
+    id: "space.launch-operations-coordinator",
+    name: "Launch Operations Coordinator",
+    description:
+      "Delegate coordination of launch window analysis and initial mission phase documentation.",
+    vertical: "space",
+    scope: {
+      actions: [
+        "space.mission.launch_window_analysis",
+        "space.mission.document_mission_phase",
+      ],
+      resourcePatterns: ["program-satellite", "launch-vehicle"],
+      effect: "ALLOW",
+    },
+    constraints: {
+      time: { defaultDuration: "P7D" },
+      geoRestrictions: {
+        restricted_areas: ["KSC", "Vandenberg"],
+        prohibited_actions: ["space.orbital.debris_avoidance_maneuver"],
+      },
+    },
+    delegateType: "AGENT",
+  },
+  {
+    id: "space.orbital-safety-manager",
+    name: "Orbital Safety Manager",
+    description:
+      "Delegate monitoring for orbital debris and planning avoidance maneuvers, with strict human approval.",
+    vertical: "space",
+    scope: {
+      actions: [
+        "space.telemetry.flag_anomaly",
+        "space.orbital.debris_avoidance_maneuver",
+      ],
+      resourcePatterns: ["program-satellite", "orbital-debris-database"],
+      effect: "ALLOW",
+    },
+    constraints: {
+      escalationRules: {
+        severity_threshold: "CRITICAL",
+        escalate_to: "orbital_safety_officer",
+        escalation_method: "IMMEDIATE_NOTIFICATION",
+      },
+      orbitalAssetAccess: {
+        allowed_asset_ids: ["SAT-123", "SAT-456"],
+        access_level: "COMMAND_AND_CONTROL",
+      },
+    },
+    delegateType: "AGENT",
+  },
 ];

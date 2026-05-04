@@ -27,6 +27,24 @@ export const SPACE_ACTIONS: TaxonomyAction[] = [
     requiresHumanApproval: false,
     tags: ["mission", "planning", "timeline"],
   },
+  {
+    id: "space.mission.launch_window_analysis",
+    label: "Launch Window Analysis",
+    description:
+      "Authorize an AI agent to perform analysis for optimal launch windows based on orbital mechanics, weather, and range constraints.",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: true,
+    tags: ["mission", "planning", "launch"],
+  },
+  {
+    id: "space.mission.document_mission_phase",
+    label: "Document Mission Phase",
+    description:
+      "Authorize an AI agent to generate documentation summarizing key activities and status for a specific mission phase.",
+    riskLevel: "LOW",
+    requiresHumanApproval: false,
+    tags: ["mission", "documentation", "reporting"],
+  },
 
   // ── Telemetry & Health Monitoring ───────────────────────
   {
@@ -66,6 +84,15 @@ export const SPACE_ACTIONS: TaxonomyAction[] = [
     riskLevel: "HIGH",
     requiresHumanApproval: true,
     tags: ["payload", "calibration", "quality"],
+  },
+  {
+    id: "space.payload.optimize_data_downlink",
+    label: "Optimize Payload Data Downlink",
+    description:
+      "Authorize an AI agent to optimize the schedule and parameters for downlinking payload data to maximize throughput and minimize latency.",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: false,
+    tags: ["payload", "data", "optimization"],
   },
 
   // ── Data Operations ─────────────────────────────────────
@@ -107,6 +134,15 @@ export const SPACE_ACTIONS: TaxonomyAction[] = [
     requiresHumanApproval: false,
     tags: ["compliance", "governance", "remote-sensing"],
   },
+  {
+    id: "space.groundstation.schedule_contact",
+    label: "Schedule Ground Station Contact",
+    description:
+      "Authorize an AI agent to schedule and reserve ground station contact times for satellite communication.",
+    riskLevel: "LOW",
+    requiresHumanApproval: false,
+    tags: ["ground-segment", "scheduling", "communication"],
+  },
 
   // ── Anomaly & Safety Response ───────────────────────────
   {
@@ -126,5 +162,14 @@ export const SPACE_ACTIONS: TaxonomyAction[] = [
     riskLevel: "CRITICAL",
     requiresHumanApproval: true,
     tags: ["anomaly", "safety", "conjunction"],
+  },
+  {
+    id: "space.orbital.debris_avoidance_maneuver",
+    label: "Orbital Debris Avoidance Maneuver",
+    description:
+      "Authorize an AI agent to plan and execute an orbital maneuver to avoid potential collision with space debris.",
+    riskLevel: "CRITICAL",
+    requiresHumanApproval: true,
+    tags: ["orbital", "safety", "debris"],
   },
 ];
