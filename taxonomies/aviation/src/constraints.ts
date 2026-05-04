@@ -81,4 +81,48 @@ export const AVIATION_CONSTRAINTS: TaxonomyConstraintTemplate[] = [
       escalation_method: "APPROVAL_REQUIRED",
     },
   },
+  {
+    id: "aviation.compliance.crew-rest",
+    name: "Crew Rest Requirement",
+    description: "Ensures mandatory crew rest periods are respected before scheduling",
+    type: "TIME",
+    schema: {
+      minimum_rest_hours: {
+        type: "number",
+        description: "Minimum required rest hours",
+        default: 10,
+      },
+      require_manager_override: {
+        type: "boolean",
+        description: "Whether a manager can override this constraint",
+        default: false,
+      },
+    },
+    defaults: {
+      minimum_rest_hours: 10,
+      require_manager_override: false,
+    },
+  },
+  {
+    id: "aviation.safety.weather-minimums",
+    name: "Weather Minimums Constraint",
+    description: "Restricts operations when weather conditions fall below minimums",
+    type: "TIME",
+    schema: {
+      min_visibility_sm: {
+        type: "number",
+        description: "Minimum visibility in statute miles",
+        default: 0.5,
+      },
+      max_crosswind_knots: {
+        type: "number",
+        description: "Maximum crosswind component in knots",
+        default: 25,
+      },
+    },
+    defaults: {
+      min_visibility_sm: 0.5,
+      max_crosswind_knots: 25,
+    },
+  },
 ];
