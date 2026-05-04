@@ -142,4 +142,17 @@ export const REALESTATE_RESOURCES: TaxonomyResourcePattern[] = [
       },
     ],
   },
+  {
+    name: "market-data",
+    pattern: "realestate:market-data:{dataType}/*",
+    description: "External market data for property valuation and analysis",
+    parameters: [
+      {
+        name: "dataType",
+        type: "string",
+        description: "Type of market data (e.g., sales-comparables, rental-rates)",
+        required: true,
+      },
+    ],
+  },
 ];

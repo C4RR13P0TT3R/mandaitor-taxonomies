@@ -159,4 +159,58 @@ export const REALESTATE_TEMPLATES: TaxonomyMandateTemplate[] = [
     },
     delegateType: "AGENT",
   },
+  {
+    id: "realestate.esg-reporting-compliance",
+    name: "ESG Reporting & Compliance",
+    description:
+      "Delegate ESG reporting and ensure compliance with data privacy regulations for property data.",
+    vertical: "realestate",
+    scope: {
+      actions: [
+        "realestate.reporting.esg_sustainability",
+      ],
+      resourcePatterns: ["portfolio-property"],
+      effect: "ALLOW",
+    },
+    constraints: {
+      time: { defaultDuration: "P365D" },
+      escalationRules: {
+        escalateTo: "data_privacy_officer",
+        escalationMethod: "APPROVAL_REQUIRED",
+        alwaysEscalateActions: ["realestate.reporting.esg_sustainability"],
+      },
+    },
+    delegateType: "AGENT",
+  },
+  {
+    id: "realestate.property-acquisition-valuation",
+    name: "Property Acquisition & Valuation",
+    description:
+      "Delegate property valuation, acquisition analysis, and budget forecasting for new investments.",
+    vertical: "realestate",
+    scope: {
+      actions: [
+        "realestate.property.valuation",
+        "realestate.property.acquisition_analysis",
+        "realestate.finance.budget_forecasting",
+      ],
+      resourcePatterns: ["portfolio-property", "market-data"],
+      effect: "ALLOW",
+      conditions: {
+        external_data_sources_allowed: true,
+      },
+    },
+    constraints: {
+      time: { defaultDuration: "P90D" },
+      transactionLimits: {
+        max_deviation_percentage: 0.05,
+      },
+      escalationRules: {
+        amount_above: { currency: "EUR", value: 1000000 },
+        escalate_to: "investment_committee",
+        escalation_method: "APPROVAL_REQUIRED",
+      },
+    },
+    delegateType: "AGENT",
+  },
 ];
