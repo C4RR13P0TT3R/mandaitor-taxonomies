@@ -124,4 +124,50 @@ export const MARITIME_ACTIONS: TaxonomyAction[] = [
     requiresHumanApproval: true,
     tags: ["incident", "disruption", "contingency"],
   },
+  // ── New Actions for Maritime Taxonomy ───────────────────
+  {
+    id: "maritime.cargo.manage_manifest",
+    label: "Manage Cargo Manifest",
+    description:
+      "Authorize an AI agent to create, update, or review cargo manifests, ensuring accuracy and compliance with shipping regulations.",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: false,
+    tags: ["cargo", "manifest", "documentation"],
+  },
+  {
+    id: "maritime.crew.track_certification",
+    label: "Track Crew Certification",
+    description:
+      "Authorize an AI agent to monitor and update crew certifications, ensuring all personnel meet required qualifications and training standards.",
+    riskLevel: "HIGH",
+    requiresHumanApproval: true,
+    tags: ["crew", "certification", "compliance"],
+  },
+  {
+    id: "maritime.compliance.prepare_port_state_inspection",
+    label: "Prepare Port State Inspection",
+    description:
+      "Authorize an AI agent to compile necessary documentation and checklists for port state control inspections, ensuring vessel readiness.",
+    riskLevel: "HIGH",
+    requiresHumanApproval: true,
+    tags: ["compliance", "inspection", "port-state"],
+  },
+  {
+    id: "maritime.bunker.manage_fuel",
+    label: "Manage Bunker Fuel",
+    description:
+      "Authorize an AI agent to monitor bunker fuel levels, plan refueling operations, and optimize fuel consumption for voyages.",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: false,
+    tags: ["bunker", "fuel", "operations"],
+  },
+  {
+    id: "maritime.vessel.report_performance",
+    label: "Report Vessel Performance",
+    description:
+      "Authorize an AI agent to generate reports on vessel performance metrics, including speed, fuel efficiency, and operational uptime.",
+    riskLevel: "LOW",
+    requiresHumanApproval: false,
+    tags: ["vessel", "performance", "reporting"],
+  },
 ];
