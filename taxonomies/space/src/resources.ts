@@ -94,4 +94,38 @@ export const SPACE_RESOURCES: TaxonomyResourcePattern[] = [
       },
     ],
   },
+  {
+    name: "launch-vehicle",
+    pattern: "space:launch:{launchId}/vehicle:{vehicleId}/*",
+    description:
+      "Resources related to a specific launch vehicle, including pre-launch checks and flight data.",
+    parameters: [
+      {
+        name: "launchId",
+        type: "string",
+        description: "Unique identifier for the launch event.",
+        required: true,
+      },
+      {
+        name: "vehicleId",
+        type: "string",
+        description: "Identifier for the launch vehicle.",
+        required: true,
+      },
+    ],
+  },
+  {
+    name: "orbital-debris-database",
+    pattern: "space:debris:{databaseId}/*",
+    description:
+      "Resources for accessing and managing orbital debris data and conjunction warnings.",
+    parameters: [
+      {
+        name: "databaseId",
+        type: "string",
+        description: "Identifier for the orbital debris database.",
+        required: true,
+      },
+    ],
+  },
 ];
