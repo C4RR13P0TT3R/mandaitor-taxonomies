@@ -121,6 +121,79 @@ export const REALESTATE_ACTIONS: TaxonomyAction[] = [
 
   // ── Reporting ───────────────────────────────────────────
   {
+    id: "realestate.reporting.esg_sustainability",
+    label: "Generate ESG/Sustainability Report",
+    description:
+      "Authorize AI agent to generate ESG and sustainability reports for properties, tracking relevant metrics and compliance.",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: false,
+    tags: ["reporting", "esg", "sustainability"],
+  },
+
+  // ── Property Management ─────────────────────────────────
+  {
+    id: "realestate.property.valuation",
+    label: "Perform Property Valuation",
+    description:
+      "Authorize AI agent to perform property valuations based on market data, comparable sales, and property characteristics.",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: true,
+    tags: ["property", "valuation", "finance"],
+  },
+  {
+    id: "realestate.property.acquisition_analysis",
+    label: "Analyze Property Acquisition",
+    description:
+      "Authorize AI agent to analyze potential property acquisitions, including financial projections and risk assessment.",
+    riskLevel: "HIGH",
+    requiresHumanApproval: true,
+    tags: ["property", "acquisition", "investment"],
+  },
+
+  // ── Lease Management ────────────────────────────────────
+  {
+    id: "realestate.lease.renewal_management",
+    label: "Manage Lease Renewals",
+    description:
+      "Authorize AI agent to manage lease renewal processes, including drafting offers and tracking deadlines.",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: true,
+    tags: ["lease", "renewal", "contract"],
+  },
+
+  // ── Tenant Communication ────────────────────────────────
+  {
+    id: "realestate.tenant.communication_scheduling",
+    label: "Schedule Tenant Communications",
+    description:
+      "Authorize AI agent to schedule and automate routine tenant communications, such as rent reminders or building updates.",
+    riskLevel: "LOW",
+    requiresHumanApproval: false,
+    tags: ["tenant", "communication", "automation"],
+  },
+
+  // ── Maintenance Scheduling ──────────────────────────────
+  {
+    id: "realestate.maintenance.schedule_service",
+    label: "Schedule Maintenance Service",
+    description:
+      "Authorize AI agent to schedule and coordinate maintenance services with tenants and vendors.",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: false,
+    tags: ["maintenance", "scheduling", "operations"],
+  },
+
+  // ── Finance ─────────────────────────────────────────────
+  {
+    id: "realestate.finance.budget_forecasting",
+    label: "Perform Budget Forecasting",
+    description:
+      "Authorize AI agent to perform budget forecasting for properties, analyzing income and expenses.",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: false,
+    tags: ["finance", "budgeting", "forecasting"],
+  },
+  {
     id: "realestate.reporting.generate",
     label: "Generate Portfolio Report",
     description:
@@ -130,3 +203,4 @@ export const REALESTATE_ACTIONS: TaxonomyAction[] = [
     tags: ["reporting", "portfolio", "analytics"],
   },
 ];
+

@@ -9,6 +9,51 @@ import type { TaxonomyAction } from "@mandaitor/taxonomy-core";
 
 export const AVIATION_ACTIONS: TaxonomyAction[] = [
   {
+    id: "aviation.communication.log_atc_communication",
+    label: "Log ATC Communication",
+    description:
+      "Authorize an AI agent to log air traffic control communications for record-keeping and analysis",
+    riskLevel: "LOW",
+    requiresHumanApproval: false,
+    tags: ["communication", "atc", "logging"],
+  },
+  {
+    id: "aviation.crew.schedule_crew",
+    label: "Schedule Crew",
+    description:
+      "Authorize an AI agent to generate and optimize crew schedules based on regulations and availability",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: true,
+    tags: ["crew", "scheduling", "operations"],
+  },
+  {
+    id: "aviation.planning.calculate_fuel_plan",
+    label: "Calculate Fuel Plan",
+    description:
+      "Authorize an AI agent to calculate optimal fuel loads considering route, weather, and aircraft performance",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: false,
+    tags: ["planning", "fuel", "optimization"],
+  },
+  {
+    id: "aviation.monitoring.etops_compliance",
+    label: "Monitor ETOPS Compliance",
+    description:
+      "Authorize an AI agent to monitor ETOPS (Extended-range Twin-engine Operational Performance Standards) compliance during flight operations",
+    riskLevel: "HIGH",
+    requiresHumanApproval: true,
+    tags: ["monitoring", "etops", "compliance"],
+  },
+  {
+    id: "aviation.safety.report_sms_event",
+    label: "Report SMS Event",
+    description:
+      "Authorize an AI agent to draft and submit a safety management system (SMS) report for detected safety events",
+    riskLevel: "MEDIUM",
+    requiresHumanApproval: false,
+    tags: ["safety", "sms", "reporting"],
+  },
+  {
     id: "aviation.dispatch.create_release",
     label: "Create Dispatch Release",
     description:

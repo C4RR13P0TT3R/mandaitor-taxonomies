@@ -1,103 +1,55 @@
-// @mandaitor/taxonomy-healthcare — Resource patterns
-//
-// Resource patterns follow clinical hierarchies:
-// organization → department → patient → record/document
-//
-// Pattern syntax: clinic:{orgId}/department:{deptId}/patient:{patientId}/*
-
 import type { TaxonomyResourcePattern } from "@mandaitor/taxonomy-core";
 
 export const HEALTHCARE_RESOURCES: TaxonomyResourcePattern[] = [
   {
     name: "patient-record",
-    pattern: "clinic:{orgId}/patient:{patientId}/record:{recordId}",
-    description: "A specific patient medical record within a clinical organization",
+    description: "A complete medical record for a specific patient",
+    pattern: "urn:healthcare:patient:{patientId}:record",
     parameters: [
-      { name: "orgId", type: "string", description: "Healthcare organization ID", required: true },
-      { name: "patientId", type: "string", description: "Patient identifier", required: true },
-      { name: "recordId", type: "string", description: "Medical record ID", required: true },
-    ],
+      { name: "patientId", description: "The unique identifier of the patient", type: "string", required: true }
+    ]
   },
   {
-    name: "patient-all",
-    pattern: "clinic:{orgId}/patient:{patientId}/*",
-    description: "All records and documents for a specific patient — broad access",
+    name: "patient-summary",
+    description: "A summarized view of a patient's medical history",
+    pattern: "urn:healthcare:patient:{patientId}:summary",
     parameters: [
-      { name: "orgId", type: "string", description: "Healthcare organization ID", required: true },
-      { name: "patientId", type: "string", description: "Patient identifier", required: true },
-    ],
+      { name: "patientId", description: "The unique identifier of the patient", type: "string", required: true }
+    ]
   },
   {
-    name: "department-patients",
-    pattern: "clinic:{orgId}/department:{deptId}/patient:*/*",
-    description: "All patients within a clinical department",
+    name: "prescription",
+    description: "A medical prescription for a specific patient",
+    pattern: "urn:healthcare:patient:{patientId}:prescription:{prescriptionId}",
     parameters: [
-      { name: "orgId", type: "string", description: "Healthcare organization ID", required: true },
-      {
-        name: "deptId",
-        type: "enum",
-        description: "Clinical department",
-        required: true,
-        enumValues: [
-          "cardiology",
-          "neurology",
-          "oncology",
-          "pediatrics",
-          "emergency",
-          "general",
-          "surgery",
-          "psychiatry",
-        ],
-      },
-    ],
+      { name: "patientId", description: "The unique identifier of the patient", type: "string", required: true },
+      { name: "prescriptionId", description: "The unique identifier of the prescription", type: "string", required: true }
+    ]
   },
   {
-    name: "patient-prescription",
-    pattern: "clinic:{orgId}/patient:{patientId}/prescription:{prescriptionId}",
-    description: "A specific prescription for a patient",
+    name: "medical-document",
+    description: "A medical document, letter, or report",
+    pattern: "urn:healthcare:patient:{patientId}:document:{documentId}",
     parameters: [
-      { name: "orgId", type: "string", description: "Healthcare organization ID", required: true },
-      { name: "patientId", type: "string", description: "Patient identifier", required: true },
-      {
-        name: "prescriptionId",
-        type: "string",
-        description: "Prescription ID",
-        required: true,
-      },
-    ],
+      { name: "patientId", description: "The unique identifier of the patient", type: "string", required: true },
+      { name: "documentId", description: "The unique identifier of the document", type: "string", required: true }
+    ]
   },
   {
-    name: "patient-appointment",
-    pattern: "clinic:{orgId}/patient:{patientId}/appointment:{appointmentId}",
-    description: "A specific patient appointment",
+    name: "appointment",
+    description: "A scheduled medical appointment",
+    pattern: "urn:healthcare:clinic:{clinicId}:appointment:{appointmentId}",
     parameters: [
-      { name: "orgId", type: "string", description: "Healthcare organization ID", required: true },
-      { name: "patientId", type: "string", description: "Patient identifier", required: true },
-      {
-        name: "appointmentId",
-        type: "string",
-        description: "Appointment ID",
-        required: true,
-      },
-    ],
+      { name: "clinicId", description: "The unique identifier of the clinic or facility", type: "string", required: true },
+      { name: "appointmentId", description: "The unique identifier of the appointment", type: "string", required: true }
+    ]
   },
   {
-    name: "patient-document",
-    pattern: "clinic:{orgId}/patient:{patientId}/document:{documentId}",
-    description: "A specific clinical document (letter, report, discharge summary)",
+    name: "telemedicine-session",
+    description: "A virtual telemedicine session",
+    pattern: "urn:healthcare:telemedicine:session:{sessionId}",
     parameters: [
-      { name: "orgId", type: "string", description: "Healthcare organization ID", required: true },
-      { name: "patientId", type: "string", description: "Patient identifier", required: true },
-      { name: "documentId", type: "string", description: "Document ID", required: true },
-    ],
-  },
-  {
-    name: "organization-wide",
-    pattern: "clinic:{orgId}/*",
-    description:
-      "All resources within a healthcare organization — use with extreme caution in clinical settings",
-    parameters: [
-      { name: "orgId", type: "string", description: "Healthcare organization ID", required: true },
-    ],
-  },
+      { name: "sessionId", description: "The unique identifier of the session", type: "string", required: true }
+    ]
+  }
 ];

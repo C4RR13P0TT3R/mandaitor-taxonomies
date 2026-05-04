@@ -98,4 +98,45 @@ export const MARITIME_TEMPLATES: TaxonomyMandateTemplate[] = [
     },
     delegateType: "AGENT",
   },
+  // ── New Mandate Templates for Maritime Taxonomy ───────────────────
+  {
+    id: "maritime.ops.crew_certification_management",
+    name: "Crew Certification Management",
+    description:
+      "Authority to track and manage crew certifications, ensuring compliance with maritime regulations.",
+    vertical: "maritime",
+    scope: {
+      actions: [
+        "maritime.crew.track_certification",
+        "maritime.compliance.prepare_port_state_inspection",
+      ],
+      resourcePatterns: ["operator-vessel"],
+      effect: "ALLOW",
+    },
+    constraints: {
+      transactionLimits: { certification_validity: { requiredCertifications: ["STCW", "Medical Certificate"] } },
+      time: { defaultDuration: "P365D" },
+    },
+    delegateType: "AGENT",
+  },
+  {
+    id: "maritime.bunker.fuel_management_and_reporting",
+    name: "Bunker Fuel Management and Reporting",
+    description:
+      "Authority to manage bunker fuel operations, including quality checks and vessel performance reporting.",
+    vertical: "maritime",
+    scope: {
+      actions: [
+        "maritime.bunker.manage_fuel",
+        "maritime.vessel.report_performance",
+      ],
+      resourcePatterns: ["operator-vessel"],
+      effect: "ALLOW",
+    },
+    constraints: {
+      transactionLimits: { fuel_quality_check: { isoStandard: "ISO 8217", maxSulfurContent: 0.5 } },
+      time: { defaultDuration: "P90D" },
+    },
+    delegateType: "AGENT",
+  },
 ];
