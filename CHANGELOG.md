@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.8.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.7.1...v1.8.0) (2026-05-04)
+
+
+### Features
+
+* **aviation:** extend taxonomy with additional actions and templates ([de6590f](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/de6590f6449ac74f9c8496bea9ff3d196520b8f2))
+* **aviation:** extend taxonomy with crew scheduling, fuel planning, ETOPS, SMS (v0.2.0) ([06a76cd](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/06a76cd3c8e77daeafd2e017342cb602d884cf62))
+* **healthcare:** add Healthcare & Life Sciences taxonomy v1.0.0 ([39f9f21](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/39f9f210ce3b8e52f2d3e95ed9df1d271cd93023))
+* **healthcare:** add Healthcare & Life Sciences taxonomy v1.0.0 ([ddd927f](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/ddd927fdc9869afebe3198a0214664e3f4ab21c3))
+* **maritime:** extend taxonomy with additional actions and templates ([869cacd](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/869cacd9fd6987866ef0144c4b925c6aabd525fc))
+* **maritime:** extend taxonomy with cargo, crew certs, PSC, bunker fuel, vessel performance (v0.2.0) ([5dba297](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/5dba297d15c7544743190d7e88227d4aca333b04))
+* **realestate:** extend taxonomy with additional actions and templates ([9c5f7f5](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/9c5f7f5ca9959a1b7dc93fd6d10c2f58e3717f2e))
+* **realestate:** extend taxonomy with valuation, ESG, lease renewal, tenant comms (v0.2.0) ([f7c53b8](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/f7c53b8430ad95a2edc1d8b47ef637726990866b))
+* **space:** extend taxonomy with additional actions and templates ([#83](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/issues/83)) ([ec4e0cc](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/ec4e0cc026ec2e7a8ee8b8167aca3a09b456f432))
+* **venture:** extend taxonomy with additional actions and templates ([#84](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/issues/84)) ([b7ae638](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/b7ae6388a60caf6afd68c400c10998b23ec81ed9))
+
+
+### Bug Fixes
+
+* **healthcare:** align devDependencies to workspace versions (typescript ^6.0.3, vitest ^4.0.0) ([45c4086](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/45c40863adb64bd12680961621044a6521df7770))
+* **healthcare:** correct test import and expand test suite to match other taxonomies ([ff1258d](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/ff1258d562feaf5cb2b305072af947f2b4ceb1fa))
+* **lockfile:** regenerate pnpm-lock.yaml with correct root typescript ^6.0.3 ([2a1276b](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/2a1276b402b5042dbbe0118c9452ceb56edd771d))
+
 ## [1.7.1](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.7.0...v1.7.1) (2026-04-29)
 
 
