@@ -25,7 +25,7 @@ describe("healthcare taxonomy", () => {
 
   it("has correct metadata", () => {
     expect(healthcareTaxonomy.metadata.id).toBe("healthcare");
-    expect(healthcareTaxonomy.metadata.version).toBe("0.2.0");
+    expect(healthcareTaxonomy.metadata.version).toBe("0.3.0");
     expect(healthcareTaxonomy.metadata.name).toBe("Healthcare & Life Sciences");
   });
 

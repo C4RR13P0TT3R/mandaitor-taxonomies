@@ -20,7 +20,7 @@ export { AVIATION_SEMANTIC_GRAPH } from "./semantic-graph.js";
 export const aviationTaxonomy: IndustryTaxonomy = {
   metadata: {
     id: "aviation",
-    version: "0.2.0",
+    version: "0.3.0",
     name: "Aviation Operations",
     description:
       "Industry taxonomy for civil aviation operations covering dispatch release preparation, route-briefing updates, maintenance triage, crew-compliance monitoring, flight documentation, and safety escalation workflows.",
@@ -31,7 +31,7 @@ export const aviationTaxonomy: IndustryTaxonomy = {
       },
     ],
     license: "Apache-2.0",
-    coreVersion: "0.2.0",
+    coreVersion: "0.3.0",
     tags: ["aviation", "dispatch", "maintenance", "safety", "agentic-ai"],
     documentationUrl: "https://trust.mandaitor.io",
     standardUrl: "https://www.icao.int",

@@ -20,7 +20,7 @@ export { SPACE_SEMANTIC_GRAPH } from "./semantic-graph.js";
 export const spaceTaxonomy: IndustryTaxonomy = {
   metadata: {
     id: "space",
-    version: "0.2.0",
+    version: "0.3.0",
     name: "Space & Satellite Operations",
     description:
       "Industry taxonomy for civil and commercial satellite mission operations covering commissioning, mission planning, telemetry health monitoring, payload tasking, remote-sensing data handling, and anomaly escalation.",
@@ -31,7 +31,7 @@ export const spaceTaxonomy: IndustryTaxonomy = {
       },
     ],
     license: "Apache-2.0",
-    coreVersion: "0.2.0",
+    coreVersion: "0.3.0",
     tags: [
       "space",
       "satellite",

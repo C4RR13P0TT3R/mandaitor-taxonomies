@@ -14,7 +14,7 @@ describe("construction taxonomy", () => {
 
   it("has correct metadata", () => {
     expect(constructionTaxonomy.metadata.id).toBe("construction");
-    expect(constructionTaxonomy.metadata.version).toBe("1.1.0");
+    expect(constructionTaxonomy.metadata.version).toBe("1.2.0");
     expect(constructionTaxonomy.metadata.name).toBe("Construction & Baumanagement");
   });
 
