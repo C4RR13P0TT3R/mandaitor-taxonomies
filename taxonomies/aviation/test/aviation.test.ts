@@ -10,7 +10,7 @@ describe("@mandaitor/taxonomy-aviation", () => {
 
   it("has the correct taxonomy ID and version", () => {
     expect(aviationTaxonomy.metadata.id).toBe("aviation");
-    expect(aviationTaxonomy.metadata.version).toBe("0.1.0");
+    expect(aviationTaxonomy.metadata.version).toBe("0.2.0");
   });
 
   it("has at least 8 actions with at least 1 HIGH or CRITICAL action", () => {

@@ -16,7 +16,7 @@ export { REALESTATE_SEMANTIC_GRAPH } from "./semantic-graph.js";
 export const realestateTaxonomy: IndustryTaxonomy = {
   metadata: {
     id: "realestate",
-    version: "0.1.0",
+    version: "0.2.0",
     name: "Real Estate & Property Management",
     description:
       "Industry taxonomy for governed AI delegation in property management, tenant operations, maintenance coordination, contracts, finance, and portfolio reporting.",
@@ -24,7 +24,7 @@ export const realestateTaxonomy: IndustryTaxonomy = {
       { name: "C4RR13P0TT3R", url: "https://github.com/C4RR13P0TT3R" },
     ],
     license: "Apache-2.0",
-    coreVersion: "0.1.0",
+    coreVersion: "0.2.0",
     tags: ["realestate", "property-management", "tenant-operations", "maintenance"],
     documentationUrl: "https://docs.mandaitor.io",
   },

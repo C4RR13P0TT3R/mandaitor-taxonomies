@@ -23,7 +23,7 @@ export { DEFENCE_ISR_SEMANTIC_GRAPH } from "./semantic-graph.js";
 export const defenceIsrTaxonomy: IndustryTaxonomy = {
   metadata: {
     id: "defence",
-    version: "1.0.0",
+    version: "1.1.0",
     name: "Defence & ISR Workflows",
     description:
       "Industry taxonomy for defence intelligence, surveillance, and reconnaissance covering imagery analysis, target classification, sensor tasking, mission planning, engagement authorization, and intelligence dissemination. Designed for Rheinmetall/ESG-style AI delegation with strict human-in-the-loop controls.",
@@ -34,7 +34,7 @@ export const defenceIsrTaxonomy: IndustryTaxonomy = {
       },
     ],
     license: "Apache-2.0",
-    coreVersion: "0.1.0",
+    coreVersion: "0.2.0",
     tags: ["defence", "isr", "intelligence", "military", "agentic-ai", "human-in-the-loop"],
     documentationUrl: "https://trust.mandaitor.io",
   },

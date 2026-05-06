@@ -23,7 +23,7 @@ export { CONSTRUCTION_SEMANTIC_GRAPH } from "./semantic-graph.js";
 export const constructionTaxonomy: IndustryTaxonomy = {
   metadata: {
     id: "construction",
-    version: "1.0.0",
+    version: "1.1.0",
     name: "Construction & Baumanagement",
     description:
       "Industry taxonomy for construction project management covering BIM validation, scheduling, procurement, cost management, documentation, defect detection, and safety workflows. Designed for integration with monco.ai.",
@@ -34,7 +34,7 @@ export const constructionTaxonomy: IndustryTaxonomy = {
       },
     ],
     license: "Apache-2.0",
-    coreVersion: "0.1.0",
+    coreVersion: "0.2.0",
     tags: ["construction", "bim", "monco", "baumanagement", "agentic-ai"],
     documentationUrl: "https://trust.mandaitor.io",
     standardUrl: "https://www.monco.ai",

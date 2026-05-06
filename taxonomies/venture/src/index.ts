@@ -20,7 +20,7 @@ export { VENTURE_SEMANTIC_GRAPH } from "./semantic-graph.js";
 export const ventureTaxonomy: IndustryTaxonomy = {
   metadata: {
     id: "venture",
-    version: "1.0.0",
+    version: "0.2.0",
     name: "Venture, Startups & Investment Decisioning",
     description:
       "Industry taxonomy for venture, founder, and investor workflows covering opportunity screening, startup diligence, investment memo preparation, fundraising coordination, and portfolio monitoring. Designed as a reusable delegation baseline for accelerator, venture studio, and early-stage investment contexts.",
@@ -31,7 +31,7 @@ export const ventureTaxonomy: IndustryTaxonomy = {
       },
     ],
     license: "Apache-2.0",
-    coreVersion: "0.1.0",
+    coreVersion: "0.2.0",
     tags: ["venture", "startup", "investment", "fundraising", "portfolio", "agentic-ai"],
     documentationUrl: "https://docs.mandaitor.io",
     standardUrl: "https://southstarter.com",
