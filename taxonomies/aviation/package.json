@@ -1,7 +1,7 @@
 {
   "name": "@mandaitor/taxonomy-aviation",
-  "version": "0.1.0",
-  "description": "Aviation operations taxonomy for Mandaitor — actions, resources, constraints and mandate templates for dispatch, maintenance coordination, flight documentation and safety escalation workflows",
+  "version": "0.1.1",
+  "description": "Aviation operations taxonomy for Mandaitor \u2014 actions, resources, constraints and mandate templates for dispatch, maintenance coordination, flight documentation and safety escalation workflows",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,9 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
