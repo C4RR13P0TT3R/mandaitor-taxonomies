@@ -10,7 +10,7 @@ describe("@mandaitor/taxonomy-defence-isr", () => {
 
   it("has the correct taxonomy ID and version", () => {
     expect(defenceIsrTaxonomy.metadata.id).toBe("defence");
-    expect(defenceIsrTaxonomy.metadata.version).toBe("1.1.0");
+    expect(defenceIsrTaxonomy.metadata.version).toBe("1.2.0");
   });
 
   it("has at least 10 actions", () => {

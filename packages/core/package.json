@@ -1,6 +1,6 @@
 {
   "name": "@mandaitor/taxonomy-core",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Core types, interfaces, validation, and registry for Mandaitor industry taxonomies",
   "type": "module",
   "main": "dist/index.js",

@@ -20,7 +20,7 @@ describe("venture taxonomy", () => {
 
   it("has correct metadata", () => {
     expect(ventureTaxonomy.metadata.id).toBe("venture");
-    expect(ventureTaxonomy.metadata.version).toBe("0.2.0");
+    expect(ventureTaxonomy.metadata.version).toBe("0.3.0");
     expect(ventureTaxonomy.metadata.name).toBe("Venture, Startups & Investment Decisioning");
   });
 
