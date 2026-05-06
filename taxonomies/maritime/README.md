@@ -1,22 +1,12 @@
 # @mandaitor/taxonomy-maritime
 
-`@mandaitor/taxonomy-maritime` publishes the **Maritime & Port Operations** taxonomy for Mandaitor. It is designed for civil commercial maritime workflows such as vessel traffic coordination, berth planning, cargo-document handling, safety-management reporting, and disruption escalation.
+Maritime & Port Operations taxonomy for Mandaitor — actions, resources, constraints, and mandate templates for vessel traffic services, port coordination, cargo management, safety reporting, and compliance workflows.
 
 ## What this package provides
 
-This package exposes a complete industry taxonomy bundle for runtime registration in Mandaitor, including actions, resource scopes, constraint templates, and mandate templates.
+This package publishes the **Maritime & Port Operations taxonomy** for Mandaitor. It exposes the compiled taxonomy object together with its actions, resource patterns, constraint templates, and mandate templates so downstream services can register and validate this vertical at runtime.
 
-| Component | Purpose |
-|---|---|
-| `maritimeTaxonomy` | Full taxonomy object for runtime registration |
-| `MARITIME_ACTIONS` | Action catalogue for vessel traffic, port, cargo, compliance, and incident workflows |
-| `MARITIME_RESOURCES` | Resource boundaries for vessels, port calls, cargo consignments, terminals, and operator-wide scopes |
-| `MARITIME_CONSTRAINTS` | Reusable time, throughput, escalation, and reporting guardrails |
-| `MARITIME_TEMPLATES` | Ready-made delegation patterns for common maritime operations |
-
-## Scope
-
-The taxonomy is intentionally limited to **civil and commercial maritime operations**. It does not model naval warfare, offensive military activity, or unrestricted emergency command authority. Instead, it focuses on bounded operational delegation where auditability, human review, and safety-management controls remain important.
+The package is intentionally scoped to **port operations, vessel traffic management, and maritime logistics**. It covers the operational chain from vessel approach through cargo handling to departure, including safety and environmental compliance.
 
 ## Installation
 
@@ -26,25 +16,41 @@ npm install @mandaitor/taxonomy-core @mandaitor/taxonomy-maritime
 
 ## Usage
 
-```ts
+```typescript
 import { registerTaxonomy } from "@mandaitor/taxonomy-core";
 import { maritimeTaxonomy } from "@mandaitor/taxonomy-maritime";
 
 registerTaxonomy(maritimeTaxonomy);
 ```
 
-## Example action families
+## Operational Scope
 
-| Family | Examples |
-|---|---|
-| Vessel traffic and port coordination | `maritime.vts.issue_navigation_advisory`, `maritime.port.assign_berth` |
-| Cargo and terminal workflows | `maritime.cargo.review_manifest`, `maritime.terminal.schedule_container_move` |
-| Safety and compliance | `maritime.safety.log_near_miss`, `maritime.compliance.file_pollution_prevention_report` |
-| Incident response | `maritime.incident.flag_navigation_risk`, `maritime.incident.activate_port_disruption_protocol` |
+| Area | What it covers |
+| :--- | :--- |
+| **Vessel Traffic Services (VTS)** | Issuing navigation advisories and sequencing arrival slots |
+| **Port Operations** | Berth assignment and tug/pilot coordination |
+| **Cargo Management** | Manifest review, dangerous goods declarations, and container scheduling |
+| **Safety** | Near-miss logging and navigation risk flagging |
+| **Compliance** | Pollution prevention reporting, cyber risk controls, and port state inspections |
+| **Incident Management** | Navigation risk escalation and port disruption protocols |
+| **Crew** | Certification tracking and qualification verification |
 
-## Governance notes
+## Included Resource Scopes
 
-High-risk and critical actions are modeled explicitly with elevated risk levels and, where appropriate, human-approval requirements. Broad operator-wide scopes should be paired with tight constraints such as active shift windows, escalation requirements, and environmental reporting policies.
+| Resource Pattern | Purpose |
+| :--- | :--- |
+| `maritime:port` | Port-wide operational scope |
+| `maritime:vessel` | Specific vessel operations |
+| `maritime:berth` | Individual berth assignment scope |
+| `maritime:cargo` | Cargo and manifest management scope |
+
+## Governance Notes
+
+The maritime taxonomy reflects governance themes from IMO conventions and port state control requirements. It distinguishes between routine operational actions (berth assignment, manifest review) and safety-critical actions (disruption protocol activation, navigation risk flagging) that require immediate human oversight.
+
+## Notes
+
+This package is published from the `mandaitor-taxonomies` monorepo. The repository root contains the broader contribution guide, taxonomy lifecycle, and release workflow: [https://github.com/C4RR13P0TT3R/mandaitor-taxonomies](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies).
 
 ## License
 
