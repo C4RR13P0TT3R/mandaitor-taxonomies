@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.8.2...v2.0.0) (2026-05-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* IndustryTaxonomy now uses a metadata object instead of flat id/version/name fields. ValidationResult now includes a warnings array. validateScope is a standalone function, not a method on IndustryTaxonomy.
+
+### Bug Fixes
+
+* publish taxonomy-core with correct IndustryTaxonomy interface ([47d5832](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/47d5832902efb382ba9f9441889c645c6c36b1a1))
+
 ## [1.8.2](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.8.1...v1.8.2) (2026-05-06)
 
 
