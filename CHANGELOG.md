@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.1](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.8.0...v1.8.1) (2026-05-06)
+
+
+### Bug Fixes
+
+* trigger release for updated package READMEs ([ce8a631](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/ce8a63101af454a0be4c9b0ec5262c2b31737270))
+* trigger release for updated package READMEs ([0e8b630](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/0e8b63014e8e53b14e5ad7531a0d503e67f86658))
+
 ## [1.8.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.7.1...v1.8.0) (2026-05-04)
 
 
