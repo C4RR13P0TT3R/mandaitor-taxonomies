@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.1](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v2.0.0...v2.0.1) (2026-05-06)
+
+
+### Bug Fixes
+
+* bump taxonomy-core to 0.3.0 (0.2.0 occupied on npm) ([3a9bcea](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/3a9bcea16cd32fb819b818531010053bca890eb8))
+* bump taxonomy-core to 0.3.0 (0.2.0 was already occupied on npm) ([c0e73d5](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/c0e73d53618f6d1a0dce8794b375b04623be288e))
+
 ## [2.0.0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v1.8.2...v2.0.0) (2026-05-06)
 
 
