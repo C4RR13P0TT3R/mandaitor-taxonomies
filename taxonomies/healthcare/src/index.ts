@@ -15,7 +15,7 @@ export { HEALTHCARE_SEMANTIC_GRAPH } from "./semantic-graph.js";
 export const healthcareTaxonomy: IndustryTaxonomy = {
   metadata: {
     id: "healthcare",
-    version: "1.0.0",
+    version: "0.2.0",
     name: "Healthcare & Life Sciences",
     description: "Industry taxonomy for healthcare workflows including patient management, telemedicine, and prescriptions.",
     maintainers: [
@@ -25,7 +25,7 @@ export const healthcareTaxonomy: IndustryTaxonomy = {
       }
     ],
     license: "Apache-2.0",
-    coreVersion: "0.1.0",
+    coreVersion: "0.2.0",
     tags: ["healthcare", "telemedicine", "medical"]
   },
   actions: HEALTHCARE_ACTIONS,

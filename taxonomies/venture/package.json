@@ -1,6 +1,6 @@
 {
   "name": "@mandaitor/taxonomy-venture",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Venture, Startups & Investment Decisioning taxonomy for Mandaitor",
   "type": "module",
   "main": "dist/index.js",
