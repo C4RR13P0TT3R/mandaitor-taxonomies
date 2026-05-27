@@ -11,18 +11,17 @@ class TaxonomyRegistry {
 
   /**
    * Register a taxonomy instance.
-   * Validates the taxonomy before registration.
+   * Always validates the taxonomy before registration — there is intentionally
+   * no opt-out, since skipping validation in downstream consumers is a footgun.
    * @throws Error if validation fails or if the same id+version is already registered
    */
-  register(taxonomy: IndustryTaxonomy, opts?: { skipValidation?: boolean }): void {
-    if (!opts?.skipValidation) {
-      const result = validateTaxonomy(taxonomy);
-      if (!result.valid) {
-        const errorSummary = result.errors.map((e) => `  ${e.path}: ${e.message}`).join("\n");
-        throw new Error(
-          `Taxonomy "${taxonomy.metadata.id}" v${taxonomy.metadata.version} failed validation:\n${errorSummary}`,
-        );
-      }
+  register(taxonomy: IndustryTaxonomy): void {
+    const result = validateTaxonomy(taxonomy);
+    if (!result.valid) {
+      const errorSummary = result.errors.map((e) => `  ${e.path}: ${e.message}`).join("\n");
+      throw new Error(
+        `Taxonomy "${taxonomy.metadata.id}" v${taxonomy.metadata.version} failed validation:\n${errorSummary}`,
+      );
     }
 
     const id = taxonomy.metadata.id;
@@ -137,8 +136,7 @@ class TaxonomyRegistry {
 
 export const taxonomyRegistry = new TaxonomyRegistry();
 
-export const registerTaxonomy = (t: IndustryTaxonomy, opts?: { skipValidation?: boolean }) =>
-  taxonomyRegistry.register(t, opts);
+export const registerTaxonomy = (t: IndustryTaxonomy) => taxonomyRegistry.register(t);
 export const getTaxonomy = (id: string, v?: string) => taxonomyRegistry.get(id, v);
 export const listTaxonomies = () => taxonomyRegistry.list();
 export const lookupAction = (id: string) => taxonomyRegistry.lookupAction(id);

@@ -30,6 +30,9 @@ jobs:
   publish:
     name: Build & Publish
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Normalize release context
         env:
@@ -111,7 +114,7 @@ jobs:
 
       - name: Publish packages
         if: github.event_name != 'workflow_dispatch' || inputs.skip_publish == false
-        run: pnpm -r publish --no-git-checks --access public
+        run: pnpm -r publish --no-git-checks --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
