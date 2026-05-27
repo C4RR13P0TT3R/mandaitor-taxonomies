@@ -502,12 +502,41 @@ function validateMandateTemplate(
   // Check time constraint format
   if (template.constraints.time?.defaultDuration) {
     const dur = template.constraints.time.defaultDuration;
-    if (!/^P(\d+Y)?(\d+M)?(\d+W)?(\d+D)?(T(\d+H)?(\d+M)?(\d+S)?)?$/.test(dur)) {
+    // ISO 8601 duration: require at least one element after P (and at least one
+    // after T if T is present). Bare "P", "PT", trailing "T" are rejected.
+    const ISO_8601_DURATION =
+      /^P(?=\d|T\d)(\d+Y)?(\d+M)?(\d+W)?(\d+D)?(T(?=\d)(\d+H)?(\d+M)?(\d+S)?)?$/;
+    const match = ISO_8601_DURATION.exec(dur);
+    if (!match) {
       errors.push({
         path: `${prefix}.constraints.time.defaultDuration`,
         message: `Invalid ISO 8601 duration: "${dur}"`,
         code: "INVALID_DURATION",
       });
+    } else {
+      // Reject all-zero durations like P0D or PT0S — at least one component
+      // must be > 0 for the duration to be meaningful.
+      const components = [
+        match[1], // years
+        match[2], // months
+        match[3], // weeks
+        match[4], // days
+        match[6], // hours
+        match[7], // minutes
+        match[8], // seconds
+      ];
+      const hasNonZero = components.some((part) => {
+        if (!part) return false;
+        const value = parseInt(part, 10);
+        return Number.isFinite(value) && value > 0;
+      });
+      if (!hasNonZero) {
+        errors.push({
+          path: `${prefix}.constraints.time.defaultDuration`,
+          message: `Invalid ISO 8601 duration: "${dur}" (must have at least one non-zero component)`,
+          code: "INVALID_DURATION",
+        });
+      }
     }
   }
 }

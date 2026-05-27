@@ -202,6 +202,45 @@ describe("validateTaxonomy", () => {
     expect(result.valid).toBe(false);
     expect(result.errors.some((e) => e.code === "INVALID_DURATION")).toBe(true);
   });
+
+  describe("ISO 8601 duration regex", () => {
+    function withDuration(duration: string): IndustryTaxonomy {
+      return makeTaxonomy({
+        mandateTemplates: [
+          {
+            id: "test.dur-template",
+            name: "Duration Template",
+            description: "Template under duration test",
+            vertical: "test",
+            scope: {
+              actions: ["test.category.operation"],
+              resourcePatterns: ["test-resource"],
+              effect: "ALLOW",
+            },
+            constraints: { time: { defaultDuration: duration } },
+            delegateType: "AGENT",
+          },
+        ],
+      });
+    }
+
+    const invalid = ["P", "PT", "P0D", "PT0S", "P0Y0M0D", "P0Y0M0DT0H0M0S", "PT0H0M0S"];
+    for (const dur of invalid) {
+      it(`rejects "${dur}"`, () => {
+        const result = validateTaxonomy(withDuration(dur));
+        expect(result.valid).toBe(false);
+        expect(result.errors.some((e) => e.code === "INVALID_DURATION")).toBe(true);
+      });
+    }
+
+    const valid = ["P1D", "PT1H30M", "P1Y2M3DT4H5M6S", "P30D", "PT1S", "P1W"];
+    for (const dur of valid) {
+      it(`accepts "${dur}"`, () => {
+        const result = validateTaxonomy(withDuration(dur));
+        expect(result.errors.some((e) => e.code === "INVALID_DURATION")).toBe(false);
+      });
+    }
+  });
 });
 
 describe("validateScope", () => {
