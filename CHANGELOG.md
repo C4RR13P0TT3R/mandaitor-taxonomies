@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v2.0.1...v2.0.2) (2026-06-01)
+
+
+### Bug Fixes
+
+* **core:** harden duration regex, remove skipValidation, add publish provenance ([68a6e44](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/68a6e44d3bdb1c33e0dd99d6534544762c8714c6))
+
 ## [2.0.1](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v2.0.0...v2.0.1) (2026-05-06)
 
 
