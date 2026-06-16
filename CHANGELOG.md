@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.3](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v2.0.2...v2.0.3) (2026-06-16)
+
+
+### Bug Fixes
+
+* **deps:** resolve esbuild Dependabot advisories via &gt;=0.28.1 override ([fe95bdf](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/fe95bdf08554288529f1bf31e9be4219b849f7c1))
+* **deps:** resolve esbuild Dependabot advisories via &gt;=0.28.1 override ([6780987](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/6780987639f1a10afeb51b88a4f90c6960e7f09b))
+
 ## [2.0.2](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v2.0.1...v2.0.2) (2026-06-01)
 
 
