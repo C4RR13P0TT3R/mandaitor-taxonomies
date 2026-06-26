@@ -94,6 +94,75 @@ describe("taxonomyRegistry", () => {
     expect(getTaxonomy("regtest")).toBe(v2);
   });
 
+  it("prefers a stable release over a prerelease of the same core version", () => {
+    // Order of registration intentionally varies to ensure the result is
+    // selection-driven, not insertion-order driven.
+    const beta = makeTaxonomy({ metadata: { ...baseMetadata, version: "1.0.0-beta" } });
+    const stable = makeTaxonomy({ metadata: { ...baseMetadata, version: "1.0.0" } });
+    registerTaxonomy(beta);
+    registerTaxonomy(stable);
+    expect(getTaxonomy("regtest")).toBe(stable);
+  });
+
+  it("does not let a prerelease (NaN-prone core) corrupt latest selection", () => {
+    // The old numeric comparator parsed "1.0.0-beta" as [1, 0, NaN]; NaN
+    // comparisons are always false, which could leave a prerelease ranked
+    // ahead of a higher stable release. Verify the higher stable wins.
+    const beta = makeTaxonomy({ metadata: { ...baseMetadata, version: "1.0.0-beta" } });
+    const stableLow = makeTaxonomy({ metadata: { ...baseMetadata, version: "1.0.0" } });
+    const stableHigh = makeTaxonomy({ metadata: { ...baseMetadata, version: "1.1.0" } });
+    registerTaxonomy(stableLow);
+    registerTaxonomy(beta);
+    registerTaxonomy(stableHigh);
+    expect(getTaxonomy("regtest")).toBe(stableHigh);
+  });
+
+  it("orders correctly across major, minor, and patch", () => {
+    const versions = ["1.0.0", "1.0.9", "1.2.0", "2.0.0", "1.10.0"];
+    for (const version of versions) {
+      registerTaxonomy(makeTaxonomy({ metadata: { ...baseMetadata, version } }));
+    }
+    // 2.0.0 is the highest; note 1.10.0 must outrank 1.2.0 (numeric, not lexical).
+    expect(getTaxonomy("regtest")?.metadata.version).toBe("2.0.0");
+    taxonomyRegistry.unregister("regtest", "2.0.0");
+    expect(getTaxonomy("regtest")?.metadata.version).toBe("1.10.0");
+  });
+
+  it("compares multiple prerelease identifiers per semver precedence", () => {
+    // Per semver.org §11:
+    //   1.0.0-alpha < 1.0.0-alpha.1 < 1.0.0-alpha.beta < 1.0.0-beta
+    //   < 1.0.0-beta.2 < 1.0.0-beta.11 < 1.0.0-rc.1 < 1.0.0
+    const ladder = [
+      "1.0.0-alpha",
+      "1.0.0-alpha.1",
+      "1.0.0-alpha.beta",
+      "1.0.0-beta",
+      "1.0.0-beta.2",
+      "1.0.0-beta.11",
+      "1.0.0-rc.1",
+      "1.0.0",
+    ];
+    for (const version of ladder) {
+      registerTaxonomy(makeTaxonomy({ metadata: { ...baseMetadata, version } }));
+    }
+    // Peeling from the top of the ladder downward, getTaxonomy() must return
+    // exactly the next-highest precedence version each time.
+    for (let i = ladder.length - 1; i >= 0; i--) {
+      expect(getTaxonomy("regtest")?.metadata.version).toBe(ladder[i]);
+      taxonomyRegistry.unregister("regtest", ladder[i]);
+    }
+    expect(getTaxonomy("regtest")).toBeUndefined();
+  });
+
+  it("ranks a numeric prerelease identifier below an alphanumeric one", () => {
+    // 1.0.0-1 < 1.0.0-alpha (numeric identifiers have lower precedence).
+    const numericPre = makeTaxonomy({ metadata: { ...baseMetadata, version: "1.0.0-1" } });
+    const alphaPre = makeTaxonomy({ metadata: { ...baseMetadata, version: "1.0.0-alpha" } });
+    registerTaxonomy(numericPre);
+    registerTaxonomy(alphaPre);
+    expect(getTaxonomy("regtest")?.metadata.version).toBe("1.0.0-alpha");
+  });
+
   it("returns undefined for an unknown id", () => {
     expect(getTaxonomy("does-not-exist")).toBeUndefined();
   });
