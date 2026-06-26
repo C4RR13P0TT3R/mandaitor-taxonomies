@@ -88,8 +88,15 @@ jobs:
           scope: "@mandaitor"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --config.strict-dep-builds=false
+        # --ignore-scripts prevents transitive dependency lifecycle scripts
+        # (preinstall/install/postinstall/prepare) from executing in this job,
+        # which holds the npm publish token (NODE_AUTH_TOKEN below). Workspace
+        # packages are built explicitly in the next step, so no needed build is
+        # skipped by suppressing dependency scripts here.
+        run: pnpm install --frozen-lockfile --ignore-scripts --config.strict-dep-builds=false
 
+      # Order is deliberate: install (--ignore-scripts) -> build -> publish, so
+      # our own packages are compiled before the token-bearing publish step.
       - name: Build all packages
         run: pnpm run build
 
@@ -114,6 +121,9 @@ jobs:
 
       - name: Publish packages
         if: github.event_name != 'workflow_dispatch' || inputs.skip_publish == false
+        # TODO: Replace the long-lived NPM_TOKEN with npm OIDC trusted publishing
+        # (id-token: write is already granted on this job) so no static publish
+        # credential needs to be stored as a repo secret.
         run: pnpm -r publish --no-git-checks --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

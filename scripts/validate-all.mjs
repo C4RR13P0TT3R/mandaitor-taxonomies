@@ -13,6 +13,16 @@ import { execFileSync } from "child_process";
 const TAXONOMIES_DIR = "taxonomies";
 const SKIP_DIRS = ["_template"];
 
+// Derive the expected named export for a taxonomy dir slug, mirroring exactly
+// how scripts/scaffold-taxonomy.mjs generates it:
+//   `${taxonomyId.replace(/-([a-z])/g, (_, c) => c.toUpperCase())}Taxonomy`
+// e.g. "defence-isr" -> "defenceIsrTaxonomy". The previous fallback used the
+// raw slug (`${dir}Taxonomy`), which never matched camel-cased hyphenated
+// slugs and silently skipped those taxonomies.
+function expectedExportName(dir) {
+  return `${dir.replace(/-([a-z])/g, (_, c) => c.toUpperCase())}Taxonomy`;
+}
+
 function ensureBuilt(outputPath, buildArgs, label) {
   if (existsSync(outputPath)) {
     return;
@@ -48,11 +58,23 @@ async function main() {
     ensureBuilt(distIndex, ["--filter", `@mandaitor/taxonomy-${dir}`, "build"], `@mandaitor/taxonomy-${dir}`);
 
     try {
+      // SECURITY NOTE: this import() executes the contributed taxonomy's built
+      // dist/index.js (its top-level/module-init code runs) at validation time,
+      // BEFORE the taxonomy object is validated. Treat contributed taxonomy code
+      // as executable when reasoning about this job — the validate/test CI job
+      // (see .github/workflows/ci.yml) is intentionally kept secret-free so a
+      // malicious contribution cannot exfiltrate credentials here.
       const mod = await import(pathToFileURL(distIndex).href);
-      const taxonomy = mod.default || mod[`${dir}Taxonomy`];
+      const exportName = expectedExportName(dir);
+      const taxonomy = mod.default || mod[exportName];
 
       if (!taxonomy) {
-        console.error(`  FAIL  ${dir} — no default export or named taxonomy export found`);
+        // Fail loudly rather than silently skipping: a taxonomy that exports
+        // neither `default` nor the correctly-cased named export is a real
+        // packaging error and must not pass CI unnoticed.
+        console.error(
+          `  FAIL  ${dir} — no taxonomy export found (expected "export default" or named export "${exportName}")`,
+        );
         hasErrors = true;
         continue;
       }
