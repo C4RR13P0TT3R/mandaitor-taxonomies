@@ -48,7 +48,7 @@ export const DEFENCE_ISR_SEMANTIC_GRAPH: SemanticGraph = {
       rationale: "Die Beauftragung einer Sensorplattform ist erforderlich, um Bilder für die Analyse zu sammeln.",
     },
     {
-      from: "defence.intelligence.fuse_multi_source_data",
+      from: "defence.intelligence.fuse_data",
       to: "defence.intelligence.generate_report",
       type: "PRECEDES",
       weight: 0.9,
@@ -121,7 +121,7 @@ export const DEFENCE_ISR_SEMANTIC_GRAPH: SemanticGraph = {
       name: "Intelligence Production",
       description: "Fokussiert auf die Analyse von Rohdaten, die Zusammenführung von Informationen und die Erstellung von umsetzbaren Geheimdienstprodukten.",
       actionIds: [
-        "defence.intelligence.fuse_multi_source_data",
+        "defence.intelligence.fuse_data",
         "defence.intelligence.generate_report",
         "defence.comms.disseminate",
       ],

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { validateTaxonomy, validateScope, matchResourcePattern } from "../src/validator";
 import type { IndustryTaxonomy, TaxonomyMetadata } from "../src/types";
+import type { SemanticGraph } from "../src/semantic-types";
 
 const validMetadata: TaxonomyMetadata = {
   id: "test",
@@ -243,6 +244,225 @@ describe("validateTaxonomy", () => {
   });
 });
 
+// ── #3: action id dedup + parentAction second pass ──
+describe("validateAction id handling", () => {
+  const baseAction = {
+    label: "Test Action",
+    description: "A test action for validation",
+    riskLevel: "LOW" as const,
+    requiresHumanApproval: false,
+    tags: ["test"],
+  };
+
+  it("does not report a spurious DUPLICATE for two invalid (empty) ids", () => {
+    const taxonomy = makeTaxonomy({
+      actions: [
+        { ...baseAction, id: "" },
+        { ...baseAction, id: "" },
+      ],
+    });
+    const result = validateTaxonomy(taxonomy);
+    // Both ids are invalid → two INVALID_ACTION_ID, but NOT a DUPLICATE_ACTION_ID
+    expect(result.errors.filter((e) => e.code === "INVALID_ACTION_ID").length).toBe(2);
+    expect(result.errors.some((e) => e.code === "DUPLICATE_ACTION_ID")).toBe(false);
+  });
+
+  it("still reports a genuine duplicate of a valid id", () => {
+    const taxonomy = makeTaxonomy({
+      actions: [
+        { ...baseAction, id: "test.category.operation" },
+        { ...baseAction, id: "test.category.operation" },
+      ],
+    });
+    const result = validateTaxonomy(taxonomy);
+    expect(result.errors.some((e) => e.code === "DUPLICATE_ACTION_ID")).toBe(true);
+  });
+
+  it("resolves a forward parentAction reference without error (order-independent)", () => {
+    const taxonomy = makeTaxonomy({
+      actions: [
+        // child appears BEFORE its parent in the array
+        { ...baseAction, id: "test.category.child", parentAction: "test.category.parent" },
+        { ...baseAction, id: "test.category.parent" },
+      ],
+    });
+    const result = validateTaxonomy(taxonomy);
+    expect(result.errors.some((e) => e.code === "UNKNOWN_PARENT")).toBe(false);
+    expect(result.warnings.some((w) => w.code === "UNKNOWN_PARENT")).toBe(false);
+  });
+
+  it("reports an unknown parentAction as an ERROR (not a warning)", () => {
+    const taxonomy = makeTaxonomy({
+      actions: [
+        { ...baseAction, id: "test.category.child", parentAction: "test.category.ghost" },
+      ],
+    });
+    const result = validateTaxonomy(taxonomy);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.code === "UNKNOWN_PARENT")).toBe(true);
+  });
+
+  it("reports a self-referencing parentAction", () => {
+    const taxonomy = makeTaxonomy({
+      actions: [
+        { ...baseAction, id: "test.category.operation", parentAction: "test.category.operation" },
+      ],
+    });
+    const result = validateTaxonomy(taxonomy);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.code === "SELF_PARENT")).toBe(true);
+  });
+});
+
+// ── #1: semanticGraph is validated by validateTaxonomy ──
+describe("validateTaxonomy semanticGraph", () => {
+  function withGraph(graph: SemanticGraph): IndustryTaxonomy {
+    return makeTaxonomy({ semanticGraph: graph });
+  }
+
+  const baseGraph = (edges: SemanticGraph["edges"]): SemanticGraph => ({
+    taxonomyId: "test",
+    schemaVersion: "1.0.0",
+    edges,
+    clusters: [],
+  });
+
+  it("accepts a graph whose edges reference only existing actions", () => {
+    const taxonomy = makeTaxonomy({
+      actions: [
+        {
+          id: "test.category.operation",
+          label: "Op One",
+          description: "first operation",
+          riskLevel: "LOW",
+          requiresHumanApproval: false,
+          tags: ["test"],
+        },
+        {
+          id: "test.category.other",
+          label: "Op Two",
+          description: "second operation",
+          riskLevel: "LOW",
+          requiresHumanApproval: false,
+          tags: ["test"],
+        },
+      ],
+      semanticGraph: baseGraph([
+        {
+          from: "test.category.operation",
+          to: "test.category.other",
+          type: "PRECEDES",
+          weight: 0.6,
+          bidirectional: false,
+        },
+      ]),
+    });
+    const result = validateTaxonomy(taxonomy);
+    expect(result.errors.some((e) => e.code === "INVALID_SEMANTIC_GRAPH")).toBe(false);
+    expect(result.valid).toBe(true);
+  });
+
+  it("rejects an edge referencing an unknown action", () => {
+    const result = validateTaxonomy(
+      withGraph(
+        baseGraph([
+          {
+            from: "test.category.operation",
+            to: "test.category.ghost",
+            type: "PRECEDES",
+            weight: 0.5,
+            bidirectional: false,
+          },
+        ]),
+      ),
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.code === "INVALID_SEMANTIC_GRAPH")).toBe(true);
+  });
+
+  it("rejects an out-of-range edge weight", () => {
+    const result = validateTaxonomy(
+      withGraph(
+        baseGraph([
+          {
+            from: "test.category.operation",
+            to: "test.category.operation",
+            type: "IMPLIES",
+            weight: 1.5,
+            bidirectional: false,
+          },
+        ]),
+      ),
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.code === "INVALID_SEMANTIC_GRAPH")).toBe(true);
+  });
+
+  it("rejects a non-numeric edge weight (NaN)", () => {
+    const result = validateTaxonomy(
+      withGraph(
+        baseGraph([
+          {
+            from: "test.category.operation",
+            to: "test.category.operation",
+            type: "IMPLIES",
+            weight: Number.NaN,
+            bidirectional: false,
+          },
+        ]),
+      ),
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.code === "INVALID_SEMANTIC_GRAPH")).toBe(true);
+  });
+
+  it("rejects a self-referencing edge", () => {
+    const result = validateTaxonomy(
+      withGraph(
+        baseGraph([
+          {
+            from: "test.category.operation",
+            to: "test.category.operation",
+            type: "IMPLIES",
+            weight: 0.5,
+            bidirectional: false,
+          },
+        ]),
+      ),
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.code === "INVALID_SEMANTIC_GRAPH")).toBe(true);
+  });
+
+  it("warns on a graph taxonomyId mismatch", () => {
+    const graph = baseGraph([]);
+    graph.taxonomyId = "not-test";
+    const result = validateTaxonomy(withGraph(graph));
+    expect(result.warnings.some((w) => w.code === "SEMANTIC_GRAPH_ID_MISMATCH")).toBe(true);
+  });
+
+  it("rejects a cluster referencing an unknown action", () => {
+    const graph = baseGraph([]);
+    graph.clusters = [
+      {
+        id: "test.cluster",
+        name: "Test Cluster",
+        description: "A cluster",
+        actionIds: ["test.category.ghost"],
+        domain: "test",
+      },
+    ];
+    const result = validateTaxonomy(withGraph(graph));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.code === "INVALID_SEMANTIC_GRAPH")).toBe(true);
+  });
+
+  it("ignores a missing semanticGraph (still valid)", () => {
+    const result = validateTaxonomy(makeTaxonomy());
+    expect(result.valid).toBe(true);
+  });
+});
+
 describe("validateScope", () => {
   const taxonomy = makeTaxonomy();
 
@@ -280,11 +500,115 @@ describe("matchResourcePattern", () => {
     expect(matchResourcePattern("test:project:{projectId}/*", "other:thing")).toBe(false);
   });
 
-  it("rejects empty parameter segments", () => {
-    expect(matchResourcePattern("test:project:{projectId}", "test:project:")).toBe(false);
-  });
-
   it("treats unmatched braces as literal characters", () => {
     expect(matchResourcePattern("test:{project", "test:{project")).toBe(true);
+  });
+
+  // ── #4: param matches an empty segment ──
+  // A {param} may resolve to a zero-length value (e.g. a missing id), so an
+  // empty trailing segment now matches. Adjacency with ":" and "/" is exercised
+  // explicitly so the param boundary behaviour is pinned down.
+  describe("param empty / separator adjacency", () => {
+    it("matches an empty trailing param value", () => {
+      expect(matchResourcePattern("test:project:{projectId}", "test:project:")).toBe(true);
+    });
+
+    it("matches a populated trailing param value", () => {
+      expect(matchResourcePattern("test:project:{projectId}", "test:project:abc")).toBe(true);
+    });
+
+    it("matches an empty param value adjacent to a following ':' literal", () => {
+      // {a} is empty, then ":zone:" literal follows
+      expect(matchResourcePattern("test:{a}:zone:{b}", "test::zone:z1")).toBe(true);
+    });
+
+    it("matches an empty param value adjacent to a following '/' literal", () => {
+      expect(matchResourcePattern("test:{a}/zone:{b}", "test:/zone:z1")).toBe(true);
+    });
+
+    it("does not let a param swallow the ':' separator", () => {
+      // {a} must stop at ':', so it cannot absorb "a1:zone" into one value
+      expect(matchResourcePattern("test:{a}", "test:a1:zone")).toBe(false);
+    });
+
+    it("does not let a param swallow the '/' separator", () => {
+      expect(matchResourcePattern("test:{a}", "test:a1/zone")).toBe(false);
+    });
+  });
+
+  // ── #2: single "*" is segment-scoped and must NOT cross "/" ──
+  describe("single-star wildcard (segment-scoped)", () => {
+    it("matches exactly one trailing segment", () => {
+      expect(matchResourcePattern("ops:{operationId}/*", "ops:op1/target:t1")).toBe(true);
+    });
+
+    it("rejects a resource that escapes the scope across '/' (over-broad case)", () => {
+      // The headline over-broad acceptance: ops:{op}/* must NOT match a deeper path.
+      expect(
+        matchResourcePattern(
+          "ops:{operationId}/*",
+          "ops:op1/mission:m1/sector:s9/target:t1",
+        ),
+      ).toBe(false);
+    });
+
+    it("allows ':' inside the matched segment but not '/'", () => {
+      // "doc:d1" is one segment containing a ':' — allowed.
+      expect(
+        matchResourcePattern(
+          "monco:project:{projectId}/zone:{zoneId}/trade:{tradeId}/*",
+          "monco:project:p1/zone:z1/trade:elektro/doc:d1",
+        ),
+      ).toBe(true);
+      // One level deeper is rejected.
+      expect(
+        matchResourcePattern(
+          "monco:project:{projectId}/zone:{zoneId}/trade:{tradeId}/*",
+          "monco:project:p1/zone:z1/trade:elektro/sub/doc",
+        ),
+      ).toBe(false);
+    });
+
+    it("scopes the mission-wide pattern to exactly one extra level", () => {
+      expect(
+        matchResourcePattern(
+          "ops:{operationId}/mission:{missionId}/*",
+          "ops:op1/mission:m1/sector:s9",
+        ),
+      ).toBe(true);
+      expect(
+        matchResourcePattern(
+          "ops:{operationId}/mission:{missionId}/*",
+          "ops:op1/mission:m1/sector:s9/asset:a1",
+        ),
+      ).toBe(false);
+    });
+
+    it("requires the literal separator before the wildcard segment", () => {
+      // Trailing "/*" needs the "/" to be present in the resource.
+      expect(matchResourcePattern("ops:{operationId}/*", "ops:op1")).toBe(false);
+    });
+
+    it("matches a star embedded inside a single segment without crossing '/'", () => {
+      expect(matchResourcePattern("test:prefix*", "test:prefix-and-more")).toBe(true);
+      expect(matchResourcePattern("test:prefix*", "test:prefix/extra")).toBe(false);
+    });
+  });
+
+  // ── #2: explicit "**" recursive wildcard ──
+  describe("double-star wildcard (recursive)", () => {
+    it("matches a whole subtree across '/'", () => {
+      expect(
+        matchResourcePattern("ops:{operationId}/**", "ops:op1/mission:m1/sector:s9/target:t1"),
+      ).toBe(true);
+    });
+
+    it("matches a single trailing segment too", () => {
+      expect(matchResourcePattern("ops:{operationId}/**", "ops:op1/x")).toBe(true);
+    });
+
+    it("collapses runs of '*' longer than two into a single recursive wildcard", () => {
+      expect(matchResourcePattern("ops:{operationId}/***", "ops:op1/a/b/c")).toBe(true);
+    });
   });
 });

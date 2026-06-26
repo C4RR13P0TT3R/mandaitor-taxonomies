@@ -62,6 +62,64 @@ const ESCALATION_TAG_PAIRS: [string, string][] = [
 ];
 
 // ────────────────────────────────────────────────────────────
+// Binary min-heap (priority queue for Dijkstra)
+// ────────────────────────────────────────────────────────────
+
+interface HeapEntry {
+  node: string;
+  cost: number;
+}
+
+/**
+ * Minimal binary min-heap keyed on `cost`. Replaces the previous
+ * `queue.sort()`-per-iteration approach so Dijkstra runs in
+ * O(E log V) instead of O(V·E log E).
+ */
+class MinHeap {
+  private readonly items: HeapEntry[] = [];
+
+  get size(): number {
+    return this.items.length;
+  }
+
+  push(entry: HeapEntry): void {
+    const items = this.items;
+    items.push(entry);
+    let i = items.length - 1;
+    while (i > 0) {
+      const parent = (i - 1) >> 1;
+      if (items[parent].cost <= items[i].cost) break;
+      [items[parent], items[i]] = [items[i], items[parent]];
+      i = parent;
+    }
+  }
+
+  pop(): HeapEntry | undefined {
+    const items = this.items;
+    const top = items[0];
+    if (top === undefined) return undefined;
+
+    const last = items.pop()!;
+    if (items.length > 0) {
+      items[0] = last;
+      let i = 0;
+      const n = items.length;
+      for (;;) {
+        const left = 2 * i + 1;
+        const right = 2 * i + 2;
+        let smallest = i;
+        if (left < n && items[left].cost < items[smallest].cost) smallest = left;
+        if (right < n && items[right].cost < items[smallest].cost) smallest = right;
+        if (smallest === i) break;
+        [items[smallest], items[i]] = [items[i], items[smallest]];
+        i = smallest;
+      }
+    }
+    return top;
+  }
+}
+
+// ────────────────────────────────────────────────────────────
 // SemanticGraphEngine
 // ────────────────────────────────────────────────────────────
 
@@ -132,38 +190,36 @@ export class SemanticGraphEngine {
   }
 
   /**
-   * Compute the semantic distance between two actions.
+   * Single-source Dijkstra over the weighted graph.
    *
-   * Uses Dijkstra's algorithm on the weighted graph where edge cost
-   * is `1 - weight` (stronger relationships = shorter distance).
-   * Returns 1.0 if no path exists.
+   * Edge cost is `1 - weight` (stronger relationships = shorter distance).
+   * Returns the raw (un-normalized) shortest-path cost to every reachable node
+   * plus predecessor links for path reconstruction. When `target` is provided
+   * the search short-circuits as soon as that node is settled.
    */
-  semanticDistance(actionA: string, actionB: string): SemanticDistanceResult {
-    if (actionA === actionB) {
-      return { from: actionA, to: actionB, distance: 0, path: [actionA], pathTypes: [] };
-    }
-
-    // Dijkstra's algorithm
+  private runDijkstra(
+    source: string,
+    target?: string,
+  ): {
+    dist: Map<string, number>;
+    prev: Map<string, { node: string; type: RelationshipType } | null>;
+  } {
     const dist = new Map<string, number>();
     const prev = new Map<string, { node: string; type: RelationshipType } | null>();
     const visited = new Set<string>();
+    const heap = new MinHeap();
 
-    // Priority queue (simple array-based for small graphs)
-    const queue: Array<{ node: string; cost: number }> = [];
+    dist.set(source, 0);
+    prev.set(source, null);
+    heap.push({ node: source, cost: 0 });
 
-    dist.set(actionA, 0);
-    prev.set(actionA, null);
-    queue.push({ node: actionA, cost: 0 });
-
-    while (queue.length > 0) {
-      // Extract minimum
-      queue.sort((a, b) => a.cost - b.cost);
-      const current = queue.shift()!;
+    while (heap.size > 0) {
+      const current = heap.pop()!;
 
       if (visited.has(current.node)) continue;
       visited.add(current.node);
 
-      if (current.node === actionB) break;
+      if (target !== undefined && current.node === target) break;
 
       const edges = this.adjacency.get(current.node) ?? [];
       for (const edge of edges) {
@@ -176,10 +232,56 @@ export class SemanticGraphEngine {
         if (!dist.has(edge.to) || newDist < dist.get(edge.to)!) {
           dist.set(edge.to, newDist);
           prev.set(edge.to, { node: current.node, type: edge.type });
-          queue.push({ node: edge.to, cost: newDist });
+          heap.push({ node: edge.to, cost: newDist });
         }
       }
     }
+
+    return { dist, prev };
+  }
+
+  /** Normalize a raw shortest-path cost into the documented 0.0–1.0 range. */
+  private static normalizeDistance(rawDist: number): number {
+    return Math.min(1.0, rawDist / MAX_TRAVERSAL_DEPTH);
+  }
+
+  /**
+   * Compute the normalized semantic distance from `source` to every action the
+   * graph knows about (i.e. every endpoint of an edge) in a SINGLE Dijkstra
+   * pass. Nodes that are unreachable from `source` are reported as 1.0 (fully
+   * unrelated); a node that is absent from the returned map is likewise to be
+   * treated as 1.0 — this matches {@link semanticDistance}, which returns 1.0
+   * for any unknown or unreachable target.
+   *
+   * Callers that need distances to many targets (neighborhoods, intent
+   * coverage) should use this instead of calling {@link semanticDistance}
+   * once per target.
+   */
+  distancesFrom(source: string): Map<string, number> {
+    const { dist } = this.runDijkstra(source);
+    const normalized = new Map<string, number>();
+    for (const node of this.actionIds) {
+      const raw = dist.get(node);
+      normalized.set(node, raw === undefined ? 1.0 : SemanticGraphEngine.normalizeDistance(raw));
+    }
+    // The source itself is always distance 0, even if it carries no edges.
+    normalized.set(source, 0);
+    return normalized;
+  }
+
+  /**
+   * Compute the semantic distance between two actions.
+   *
+   * Uses Dijkstra's algorithm on the weighted graph where edge cost
+   * is `1 - weight` (stronger relationships = shorter distance).
+   * Returns 1.0 if no path exists.
+   */
+  semanticDistance(actionA: string, actionB: string): SemanticDistanceResult {
+    if (actionA === actionB) {
+      return { from: actionA, to: actionB, distance: 0, path: [actionA], pathTypes: [] };
+    }
+
+    const { dist, prev } = this.runDijkstra(actionA, actionB);
 
     if (!dist.has(actionB)) {
       return { from: actionA, to: actionB, distance: 1.0, path: [], pathTypes: [] };
@@ -201,14 +303,10 @@ export class SemanticGraphEngine {
       }
     }
 
-    // Normalize distance to 0.0–1.0 range
-    const rawDist = dist.get(actionB)!;
-    const normalizedDist = Math.min(1.0, rawDist / MAX_TRAVERSAL_DEPTH);
-
     return {
       from: actionA,
       to: actionB,
-      distance: normalizedDist,
+      distance: SemanticGraphEngine.normalizeDistance(dist.get(actionB)!),
       path,
       pathTypes,
     };
@@ -216,14 +314,18 @@ export class SemanticGraphEngine {
 
   /**
    * Find all actions within a given semantic distance from a source action.
+   *
+   * Runs a single Dijkstra pass via {@link distancesFrom} rather than calling
+   * {@link semanticDistance} once per candidate.
    */
   semanticNeighborhood(actionId: string, maxDistance: number): string[] {
     const neighbors: string[] = [];
+    const distances = this.distancesFrom(actionId);
 
     for (const candidateId of this.actionIds) {
       if (candidateId === actionId) continue;
-      const result = this.semanticDistance(actionId, candidateId);
-      if (result.distance <= maxDistance) {
+      const distance = distances.get(candidateId) ?? 1.0;
+      if (distance <= maxDistance) {
         neighbors.push(candidateId);
       }
     }
@@ -287,6 +389,22 @@ export class SemanticGraphEngine {
     if (!cluster || cluster.actionIds.length === 0) return 0;
 
     const performedSet = new Set(performedActionIds);
+
+    // Pre-compute single-source distances once per performed action, then reuse
+    // them across every cluster action instead of re-running Dijkstra for each
+    // (performed, clusterAction) pair. The per-performed iteration order is
+    // preserved, so the "first sufficiently-near performed action wins" result
+    // is identical to the previous implementation.
+    const distanceCache = new Map<string, Map<string, number>>();
+    const distancesFor = (performed: string): Map<string, number> => {
+      let cached = distanceCache.get(performed);
+      if (!cached) {
+        cached = this.distancesFrom(performed);
+        distanceCache.set(performed, cached);
+      }
+      return cached;
+    };
+
     let coveredCount = 0;
 
     for (const clusterAction of cluster.actionIds) {
@@ -296,9 +414,9 @@ export class SemanticGraphEngine {
       }
       // Check if any performed action is semantically near the cluster action
       for (const performed of performedActionIds) {
-        const dist = this.semanticDistance(performed, clusterAction);
-        if (dist.distance < 0.3) {
-          coveredCount += 1 - dist.distance;
+        const distance = distancesFor(performed).get(clusterAction) ?? 1.0;
+        if (distance < 0.3) {
+          coveredCount += 1 - distance;
           break;
         }
       }
@@ -402,6 +520,16 @@ export function inferSemanticGraph(
   const actionMap = new Map<string, TaxonomyAction>();
   const domainGroups = new Map<string, TaxonomyAction[]>();
 
+  // Per-action "signal" set: the union of the action's tags and the word-tokens
+  // of its id (split on "." and "_"). Conflict/escalation inference matches tags
+  // against this set, so matching happens on word boundaries rather than by raw
+  // substring — an id like "...flagship..." no longer matches the "flag" trigger.
+  const actionSignals = new Map<string, Set<string>>();
+  // Inverted index: signal token → actions that carry it. Lets escalation
+  // inference iterate trigger×escalation candidates directly instead of scanning
+  // the full action × action × tag-pair cross-product.
+  const signalIndex = new Map<string, TaxonomyAction[]>();
+
   for (const action of actions) {
     actionMap.set(action.id, action);
 
@@ -412,7 +540,24 @@ export function inferSemanticGraph(
       domainGroups.set(domain, []);
     }
     domainGroups.get(domain)!.push(action);
+
+    const signals = new Set<string>(action.tags);
+    for (const token of action.id.split(/[._]/)) {
+      if (token) signals.add(token);
+    }
+    actionSignals.set(action.id, signals);
+    for (const token of signals) {
+      let bucket = signalIndex.get(token);
+      if (!bucket) {
+        bucket = [];
+        signalIndex.set(token, bucket);
+      }
+      bucket.push(action);
+    }
   }
+
+  const hasSignal = (action: TaxonomyAction, token: string): boolean =>
+    actionSignals.get(action.id)?.has(token) ?? false;
 
   // Track existing explicit edges to avoid duplicates
   const existingEdgeKeys = new Set<string>();
@@ -491,22 +636,11 @@ export function inferSemanticGraph(
   for (const [_domain, domainActions] of domainGroups) {
     for (let i = 0; i < domainActions.length; i++) {
       for (let j = i + 1; j < domainActions.length; j++) {
-        const tagsA = domainActions[i].tags;
-        const tagsB = domainActions[j].tags;
-
         for (const [positiveTag, negativeTag] of CONFLICT_TAG_PAIRS) {
-          const aHasPositive =
-            tagsA.includes(positiveTag) ||
-            domainActions[i].id.includes(positiveTag);
-          const bHasNegative =
-            tagsB.includes(negativeTag) ||
-            domainActions[j].id.includes(negativeTag);
-          const aHasNegative =
-            tagsA.includes(negativeTag) ||
-            domainActions[i].id.includes(negativeTag);
-          const bHasPositive =
-            tagsB.includes(positiveTag) ||
-            domainActions[j].id.includes(positiveTag);
+          const aHasPositive = hasSignal(domainActions[i], positiveTag);
+          const bHasNegative = hasSignal(domainActions[j], negativeTag);
+          const aHasNegative = hasSignal(domainActions[i], negativeTag);
+          const bHasPositive = hasSignal(domainActions[j], positiveTag);
 
           if ((aHasPositive && bHasNegative) || (aHasNegative && bHasPositive)) {
             addEdge({
@@ -525,27 +659,26 @@ export function inferSemanticGraph(
   }
 
   // ── Rule 4: Escalation inference (cross-domain) ───────────
-  // Escalation can cross domain boundaries (e.g. flag in validation → halt in safety)
-  for (const actionA of actions) {
-    for (const actionB of actions) {
-      if (actionA.id === actionB.id) continue;
+  // Escalation can cross domain boundaries (e.g. flag in validation → halt in safety).
+  // Use the inverted signal index to enumerate only trigger×escalation candidate
+  // pairs instead of the full action × action × tag-pair cross-product.
+  for (const [triggerTag, escalationTag] of ESCALATION_TAG_PAIRS) {
+    const triggers = signalIndex.get(triggerTag);
+    const escalations = signalIndex.get(escalationTag);
+    if (!triggers || !escalations) continue;
 
-      for (const [triggerTag, escalationTag] of ESCALATION_TAG_PAIRS) {
-        const aIsTrigger =
-          actionA.tags.includes(triggerTag) || actionA.id.includes(triggerTag);
-        const bIsEscalation =
-          actionB.tags.includes(escalationTag) || actionB.id.includes(escalationTag);
+    for (const actionA of triggers) {
+      for (const actionB of escalations) {
+        if (actionA.id === actionB.id) continue;
 
-        if (aIsTrigger && bIsEscalation) {
-          addEdge({
-            from: actionA.id,
-            to: actionB.id,
-            type: "ESCALATES_TO",
-            weight: INFERRED_WEIGHTS.ESCALATES_TO,
-            bidirectional: false,
-            rationale: `Escalation: ${triggerTag} → ${escalationTag}`,
-          });
-        }
+        addEdge({
+          from: actionA.id,
+          to: actionB.id,
+          type: "ESCALATES_TO",
+          weight: INFERRED_WEIGHTS.ESCALATES_TO,
+          bidirectional: false,
+          rationale: `Escalation: ${triggerTag} → ${escalationTag}`,
+        });
       }
     }
   }
@@ -624,14 +757,29 @@ export function validateSemanticGraph(
   const errors: string[] = [];
   const validActionIds = new Set(taxonomy.actions.map((a) => a.id));
 
-  for (const edge of graph.edges) {
+  // Contributed graphs are untrusted input, so the shape itself is validated
+  // before its contents (a non-array edges/clusters must not throw).
+  const edges = Array.isArray(graph.edges) ? graph.edges : [];
+  if (!Array.isArray(graph.edges)) {
+    errors.push("Semantic graph edges must be an array");
+  }
+  const clusters = Array.isArray(graph.clusters) ? graph.clusters : [];
+  if (!Array.isArray(graph.clusters)) {
+    errors.push("Semantic graph clusters must be an array");
+  }
+
+  for (const edge of edges) {
     if (!validActionIds.has(edge.from)) {
       errors.push(`Edge references unknown action: "${edge.from}"`);
     }
     if (!validActionIds.has(edge.to)) {
       errors.push(`Edge references unknown action: "${edge.to}"`);
     }
-    if (edge.weight < 0 || edge.weight > 1) {
+    // A weight must be a real number inside the documented 0.0–1.0 range.
+    // NaN / Infinity / non-numeric values are rejected outright.
+    if (typeof edge.weight !== "number" || !Number.isFinite(edge.weight)) {
+      errors.push(`Edge ${edge.from} → ${edge.to} has non-numeric weight: ${edge.weight}`);
+    } else if (edge.weight < 0 || edge.weight > 1) {
       errors.push(`Edge ${edge.from} → ${edge.to} has invalid weight: ${edge.weight}`);
     }
     if (edge.from === edge.to) {
@@ -639,8 +787,9 @@ export function validateSemanticGraph(
     }
   }
 
-  for (const cluster of graph.clusters) {
-    for (const actionId of cluster.actionIds) {
+  for (const cluster of clusters) {
+    const actionIds = Array.isArray(cluster.actionIds) ? cluster.actionIds : [];
+    for (const actionId of actionIds) {
       if (!validActionIds.has(actionId)) {
         errors.push(`Cluster "${cluster.id}" references unknown action: "${actionId}"`);
       }

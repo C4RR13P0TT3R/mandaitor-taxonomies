@@ -42,7 +42,7 @@ export const defenceIsrTaxonomy: IndustryTaxonomy = {
   resourcePatterns: DEFENCE_RESOURCES,
   constraintTemplates: DEFENCE_CONSTRAINTS,
   mandateTemplates: DEFENCE_TEMPLATES,
-  semanticGraph: DEFENCE_ISR_SEMANTIC_GRAPH as any,
+  semanticGraph: DEFENCE_ISR_SEMANTIC_GRAPH,
 };
 
 export default defenceIsrTaxonomy;

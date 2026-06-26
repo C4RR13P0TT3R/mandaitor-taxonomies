@@ -5,6 +5,8 @@
 // main mandaitor repository, but published independently so that taxonomy
 // contributors do not need access to the full infrastructure monorepo.
 
+import type { SemanticGraph } from "./semantic-types.js";
+
 /**
  * An Action defines a specific operation that can be delegated.
  * Actions follow a hierarchical naming convention: {domain}.{category}.{operation}
@@ -140,9 +142,10 @@ export interface IndustryTaxonomy {
   mandateTemplates: TaxonomyMandateTemplate[];
   /**
    * @experimental Semantic graph defining relationships between actions.
-   * When present, enables Drift Detection and Semantic Verification features.
+   * When present, it is structurally validated by {@link validateTaxonomy}
+   * and enables Drift Detection and Semantic Verification features.
    */
-  semanticGraph?: import("./semantic-types.js").SemanticGraph;
+  semanticGraph?: SemanticGraph;
 }
 
 export interface ValidationResult {

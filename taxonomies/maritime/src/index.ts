@@ -31,7 +31,7 @@ export const maritimeTaxonomy: IndustryTaxonomy = {
   resourcePatterns: MARITIME_RESOURCES,
   constraintTemplates: MARITIME_CONSTRAINTS,
   mandateTemplates: MARITIME_TEMPLATES,
-  semanticGraph: MARITIME_SEMANTIC_GRAPH as any,
+  semanticGraph: MARITIME_SEMANTIC_GRAPH,
 };
 
 export default maritimeTaxonomy;
