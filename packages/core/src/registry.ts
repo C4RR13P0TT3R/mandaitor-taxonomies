@@ -3,6 +3,79 @@ import type { IndustryTaxonomy, TaxonomyAction, TaxonomyMandateTemplate } from "
 import { validateTaxonomy } from "./validator.js";
 
 /**
+ * Compare two semver strings by precedence (semver.org §11), returning a
+ * negative number if `a` has lower precedence than `b`, positive if higher,
+ * and 0 if equal in precedence. Dependency-free.
+ *
+ * Rules implemented:
+ *  - Major, minor, and patch are compared numerically in that order.
+ *  - A version WITHOUT a prerelease tag has HIGHER precedence than the same
+ *    core version WITH a prerelease tag (e.g. 1.0.0 > 1.0.0-beta).
+ *  - Prerelease tags are compared per §11: dot-separated identifiers are
+ *    compared left to right; purely numeric identifiers compare numerically,
+ *    non-numeric (or mixed) identifiers compare lexically in ASCII order,
+ *    numeric identifiers always have lower precedence than non-numeric ones,
+ *    and a larger set of identifiers outranks a smaller one when all preceding
+ *    identifiers are equal.
+ *
+ * Build metadata (after `+`) is ignored for precedence, per §10. Inputs are
+ * expected to already satisfy the validator's SEMVER_PATTERN; any non-numeric
+ * core segment is treated as 0 defensively rather than producing NaN.
+ */
+function compareSemver(a: string, b: string): number {
+  const parse = (v: string): { core: number[]; pre: string[] } => {
+    // Strip build metadata, then split off the prerelease portion.
+    const withoutBuild = v.split("+", 1)[0];
+    const dashIndex = withoutBuild.indexOf("-");
+    const corePart = dashIndex === -1 ? withoutBuild : withoutBuild.slice(0, dashIndex);
+    const prePart = dashIndex === -1 ? "" : withoutBuild.slice(dashIndex + 1);
+    const core = corePart.split(".").map((n) => {
+      const parsed = Number(n);
+      return Number.isFinite(parsed) ? parsed : 0;
+    });
+    // Pad to [major, minor, patch] so missing segments compare as 0.
+    while (core.length < 3) core.push(0);
+    const pre = prePart === "" ? [] : prePart.split(".");
+    return { core, pre };
+  };
+
+  const pa = parse(a);
+  const pb = parse(b);
+
+  for (let i = 0; i < 3; i++) {
+    if (pa.core[i] !== pb.core[i]) return pa.core[i] - pb.core[i];
+  }
+
+  // Equal core versions: a version with no prerelease outranks one with a
+  // prerelease tag.
+  if (pa.pre.length === 0 && pb.pre.length === 0) return 0;
+  if (pa.pre.length === 0) return 1;
+  if (pb.pre.length === 0) return -1;
+
+  const len = Math.min(pa.pre.length, pb.pre.length);
+  for (let i = 0; i < len; i++) {
+    const ia = pa.pre[i];
+    const ib = pb.pre[i];
+    const aNum = /^\d+$/.test(ia);
+    const bNum = /^\d+$/.test(ib);
+    if (aNum && bNum) {
+      const na = Number(ia);
+      const nb = Number(ib);
+      if (na !== nb) return na - nb;
+    } else if (aNum !== bNum) {
+      // Numeric identifiers always have lower precedence than non-numeric.
+      return aNum ? -1 : 1;
+    } else if (ia !== ib) {
+      // Both non-numeric: compare lexically in ASCII sort order.
+      return ia < ib ? -1 : 1;
+    }
+  }
+
+  // All shared identifiers equal: the longer prerelease list outranks.
+  return pa.pre.length - pb.pre.length;
+}
+
+/**
  * In-memory registry of loaded industry taxonomies.
  * Singleton pattern — one registry per process.
  */
@@ -47,14 +120,9 @@ class TaxonomyRegistry {
 
     if (version) return versions.get(version);
 
-    const sorted = [...versions.keys()].sort((a, b) => {
-      const pa = a.split(".").map(Number);
-      const pb = b.split(".").map(Number);
-      for (let i = 0; i < 3; i++) {
-        if ((pa[i] || 0) !== (pb[i] || 0)) return (pb[i] || 0) - (pa[i] || 0);
-      }
-      return 0;
-    });
+    // Sort by semver precedence, highest first, so the latest stable release is
+    // preferred over any prerelease sharing the same core version.
+    const sorted = [...versions.keys()].sort((a, b) => compareSemver(b, a));
     return versions.get(sorted[0]);
   }
 
