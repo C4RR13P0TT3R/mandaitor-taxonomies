@@ -16,6 +16,7 @@ import type {
   ValidationError,
   ValidationWarning,
 } from "./types.js";
+import { validateSemanticGraph } from "./semantic-graph.js";
 
 // ── ID Pattern Rules ─────────────────────────────────────────
 // Action IDs: {domain}.{category}.{operation} — at least 3 segments
@@ -74,6 +75,9 @@ export function validateTaxonomy(taxonomy: IndustryTaxonomy): ValidationResult {
   for (let i = 0; i < taxonomy.actions.length; i++) {
     validateAction(taxonomy.actions[i], i, taxonomy.metadata.id, actionIds, errors, warnings);
   }
+  // Second pass: resolve parentAction references against the full id set so the
+  // result does not depend on action ordering.
+  validateActionParents(taxonomy.actions, actionIds, errors);
 
   // ── Resource pattern validation ──
   const resourceNames = new Set<string>();
@@ -107,6 +111,16 @@ export function validateTaxonomy(taxonomy: IndustryTaxonomy): ValidationResult {
       errors,
       warnings,
     );
+  }
+
+  // ── Semantic graph validation ──
+  // A taxonomy's semanticGraph reaches the runtime engine, so when one is
+  // present its structural invariants are enforced here. Referential and
+  // numeric problems (edges pointing at unknown actions, weights outside
+  // 0.0–1.0, self-references, clusters referencing unknown actions) are
+  // promoted to ERRORS — they indicate a malformed graph, not a style nit.
+  if (taxonomy.semanticGraph) {
+    validateSemanticGraphSection(taxonomy, errors, warnings);
   }
 
   // ── Cross-reference checks ──
@@ -223,7 +237,8 @@ function validateAction(
 ): void {
   const prefix = `actions[${index}]`;
 
-  if (!action.id || !ACTION_ID_PATTERN.test(action.id)) {
+  const hasValidId = !!action.id && ACTION_ID_PATTERN.test(action.id);
+  if (!hasValidId) {
     errors.push({
       path: `${prefix}.id`,
       message: `Invalid action ID "${action.id}". Must match pattern: {domain}.{category}.{operation}`,
@@ -240,14 +255,19 @@ function validateAction(
     });
   }
 
-  if (seenIds.has(action.id)) {
-    errors.push({
-      path: `${prefix}.id`,
-      message: `Duplicate action ID: "${action.id}"`,
-      code: "DUPLICATE_ACTION_ID",
-    });
+  // Only track syntactically valid ids for duplicate detection. An empty or
+  // malformed id must not be recorded — otherwise two separately-broken actions
+  // would collapse into a spurious "duplicate" and mask the real INVALID_ACTION_ID.
+  if (hasValidId) {
+    if (seenIds.has(action.id)) {
+      errors.push({
+        path: `${prefix}.id`,
+        message: `Duplicate action ID: "${action.id}"`,
+        code: "DUPLICATE_ACTION_ID",
+      });
+    }
+    seenIds.add(action.id);
   }
-  seenIds.add(action.id);
 
   if (!action.label || action.label.length < 3) {
     errors.push({
@@ -289,13 +309,123 @@ function validateAction(
     });
   }
 
-  if (action.parentAction && !seenIds.has(action.parentAction)) {
-    // Parent might be defined later, so this is a warning
-    warnings.push({
-      path: `${prefix}.parentAction`,
-      message: `Parent action "${action.parentAction}" not found (may be defined later)`,
-      code: "UNKNOWN_PARENT",
+  // NOTE: parentAction is resolved in a dedicated second pass (see
+  // validateActionParents) once the full set of action ids is known, so that an
+  // unknown parent is a deterministic error rather than an order-dependent warning.
+}
+
+/**
+ * Second-pass resolution of action.parentAction references.
+ *
+ * Run after every action has been collected so the check is order-independent:
+ * a parent declared later in the array resolves correctly, and a parent that is
+ * genuinely absent is a hard error rather than a "may be defined later" warning.
+ */
+function validateActionParents(
+  actions: TaxonomyAction[],
+  validActionIds: Set<string>,
+  errors: ValidationError[],
+): void {
+  for (let i = 0; i < actions.length; i++) {
+    const action = actions[i];
+    if (!action.parentAction) continue;
+
+    if (action.parentAction === action.id) {
+      errors.push({
+        path: `actions[${i}].parentAction`,
+        message: `Action "${action.id}" cannot be its own parent`,
+        code: "SELF_PARENT",
+      });
+      continue;
+    }
+
+    if (!validActionIds.has(action.parentAction)) {
+      errors.push({
+        path: `actions[${i}].parentAction`,
+        message: `Parent action "${action.parentAction}" not found in taxonomy`,
+        code: "UNKNOWN_PARENT",
+      });
+    }
+  }
+}
+
+// ── Semantic Graph ───────────────────────────────────────────
+
+/**
+ * Validate a taxonomy's optional semanticGraph and fold the results into the
+ * taxonomy-level error/warning lists.
+ *
+ * Because contributed graphs are untrusted input that reaches the runtime
+ * engine, the graph's top-level SHAPE is checked first (the function must never
+ * throw on a malformed graph). Referential/numeric checks then come from
+ * {@link validateSemanticGraph} (shared with the runtime engine) and are
+ * surfaced as ERRORS. A few advisory checks (graph taxonomyId mismatch,
+ * duplicate cluster ids) are added here as WARNINGS.
+ */
+function validateSemanticGraphSection(
+  taxonomy: IndustryTaxonomy,
+  errors: ValidationError[],
+  warnings: ValidationWarning[],
+): void {
+  const graph = taxonomy.semanticGraph;
+  if (!graph || typeof graph !== "object") return;
+
+  // ── Top-level structural checks ──
+  // A malformed schemaVersion / missing edges|clusters arrays indicate the graph
+  // does not implement the SemanticGraph contract at all (e.g. an ad-hoc
+  // nodes/source/target shape). These are hard errors.
+  if (graph.schemaVersion !== "1.0.0") {
+    errors.push({
+      path: "semanticGraph.schemaVersion",
+      message: `Unsupported semantic graph schemaVersion: "${graph.schemaVersion}" (expected "1.0.0")`,
+      code: "INVALID_SEMANTIC_GRAPH",
     });
+  }
+  if (!Array.isArray(graph.edges)) {
+    errors.push({
+      path: "semanticGraph.edges",
+      message: "Semantic graph must define an edges array",
+      code: "INVALID_SEMANTIC_GRAPH",
+    });
+  }
+  if (!Array.isArray(graph.clusters)) {
+    errors.push({
+      path: "semanticGraph.clusters",
+      message: "Semantic graph must define a clusters array",
+      code: "INVALID_SEMANTIC_GRAPH",
+    });
+  }
+
+  // ── Referential / numeric checks (shared with the runtime engine) ──
+  const graphResult = validateSemanticGraph(graph, taxonomy);
+  for (const message of graphResult.errors) {
+    errors.push({
+      path: "semanticGraph",
+      message,
+      code: "INVALID_SEMANTIC_GRAPH",
+    });
+  }
+
+  // The graph should describe this taxonomy. A mismatched taxonomyId is most
+  // likely a copy/paste slip; it is advisory rather than fatal.
+  if (graph.taxonomyId !== taxonomy.metadata.id) {
+    warnings.push({
+      path: "semanticGraph.taxonomyId",
+      message: `Semantic graph taxonomyId "${graph.taxonomyId}" does not match taxonomy ID "${taxonomy.metadata.id}"`,
+      code: "SEMANTIC_GRAPH_ID_MISMATCH",
+    });
+  }
+
+  const seenClusterIds = new Set<string>();
+  for (const cluster of Array.isArray(graph.clusters) ? graph.clusters : []) {
+    if (seenClusterIds.has(cluster.id)) {
+      warnings.push({
+        path: `semanticGraph.clusters[${cluster.id}]`,
+        message: `Duplicate semantic cluster id: "${cluster.id}"`,
+        code: "DUPLICATE_SEMANTIC_CLUSTER",
+      });
+    }
+    seenClusterIds.add(cluster.id);
   }
 }
 
@@ -602,23 +732,47 @@ export function validateScope(
 type ResourcePatternToken =
   | { type: "literal"; value: string }
   | { type: "param" }
-  | { type: "star" };
+  // Single "*" — matches within ONE path segment. It may span the ":" key/value
+  // separator (e.g. "doc:d1") but never the "/" level separator, so a trailing
+  // "/*" authorizes exactly one additional hierarchy level, not the whole subtree.
+  | { type: "star" }
+  // Explicit recursive wildcard "**" — matches zero or more characters across
+  // any separator, including "/". This is the only way to authorize a whole
+  // subtree, and it must be written out deliberately by a taxonomy author.
+  | { type: "globstar" };
+
+const SEGMENT_SEPARATOR = "/";
 
 function tokenizeResourcePattern(pattern: string): ResourcePatternToken[] {
   const tokens: ResourcePatternToken[] = [];
   let literalBuffer = "";
 
+  const flushLiteral = (): void => {
+    if (literalBuffer) {
+      tokens.push({ type: "literal", value: literalBuffer });
+      literalBuffer = "";
+    }
+  };
+
   for (let index = 0; index < pattern.length; index += 1) {
     const char = pattern[index];
 
     if (char === "*") {
-      if (literalBuffer) {
-        tokens.push({ type: "literal", value: literalBuffer });
-        literalBuffer = "";
+      flushLiteral();
+
+      // Collapse a run of "*" into a single token. A run of length >= 2 is the
+      // recursive "globstar" (crosses "/"); a single "*" stays segment-scoped.
+      let runLength = 1;
+      while (pattern[index + 1] === "*") {
+        runLength += 1;
+        index += 1;
       }
 
-      if (tokens[tokens.length - 1]?.type !== "star") {
-        tokens.push({ type: "star" });
+      const type = runLength >= 2 ? "globstar" : "star";
+      // Avoid stacking equivalent wildcard tokens (e.g. "*/*" keeps both because a
+      // literal "/" sits between them, but "***" collapses to one globstar).
+      if (tokens[tokens.length - 1]?.type !== type) {
+        tokens.push({ type });
       }
       continue;
     }
@@ -626,11 +780,7 @@ function tokenizeResourcePattern(pattern: string): ResourcePatternToken[] {
     if (char === "{") {
       const closingBraceIndex = pattern.indexOf("}", index + 1);
       if (closingBraceIndex !== -1) {
-        if (literalBuffer) {
-          tokens.push({ type: "literal", value: literalBuffer });
-          literalBuffer = "";
-        }
-
+        flushLiteral();
         tokens.push({ type: "param" });
         index = closingBraceIndex;
         continue;
@@ -640,22 +790,31 @@ function tokenizeResourcePattern(pattern: string): ResourcePatternToken[] {
     literalBuffer += char;
   }
 
-  if (literalBuffer) {
-    tokens.push({ type: "literal", value: literalBuffer });
-  }
+  flushLiteral();
 
   return tokens;
 }
 
 /**
  * Match a resource URI against a pattern template.
+ *
+ * Wildcard semantics (security-relevant — see {@link validateScope}):
+ *   - "{param}" matches a single value within a segment. It does not cross the
+ *     ":" or "/" separators, and an empty value is allowed.
+ *   - "*" matches within a single hierarchy level: any run of characters that
+ *     does not contain "/". It therefore authorizes exactly one trailing
+ *     segment (e.g. "ops:{op}/*" matches "ops:o1/target:t1" but NOT
+ *     "ops:o1/mission:m1/target:t1").
+ *   - "**" is the explicit recursive wildcard: it matches across "/" and
+ *     authorizes a whole subtree. Use it deliberately when broad access is
+ *     intended.
  */
 export function matchResourcePattern(pattern: string, resource: string): boolean {
   const tokens = tokenizeResourcePattern(pattern);
-  const memo = new Map<string, boolean>();
+  const memo = new Map<number, boolean>();
 
   const matches = (tokenIndex: number, resourceIndex: number): boolean => {
-    const memoKey = `${tokenIndex}:${resourceIndex}`;
+    const memoKey = tokenIndex * (resource.length + 1) + resourceIndex;
     const memoized = memo.get(memoKey);
     if (memoized !== undefined) {
       return memoized;
@@ -678,25 +837,53 @@ export function matchResourcePattern(pattern: string, resource: string): boolean
     }
 
     if (token.type === "param") {
-      let nextIndex = resourceIndex;
+      // A param fills one value: it may consume zero or more characters up to
+      // (but not across) the next ":" or "/" separator. Zero-length is allowed
+      // so an empty value still matches.
       let isMatch = false;
-
-      while (
-        nextIndex < resource.length &&
-        resource[nextIndex] !== ":" &&
-        resource[nextIndex] !== "/"
-      ) {
-        nextIndex += 1;
+      let nextIndex = resourceIndex;
+      // Try the shortest (possibly empty) value first, then extend.
+      for (;;) {
         if (matches(tokenIndex + 1, nextIndex)) {
           isMatch = true;
           break;
         }
+        if (
+          nextIndex >= resource.length ||
+          resource[nextIndex] === ":" ||
+          resource[nextIndex] === SEGMENT_SEPARATOR
+        ) {
+          break;
+        }
+        nextIndex += 1;
       }
 
       memo.set(memoKey, isMatch);
       return isMatch;
     }
 
+    if (token.type === "star") {
+      // Segment-scoped wildcard: consume zero or more characters but never the
+      // "/" level separator. This is what keeps a trailing "/*" from escaping
+      // the intended hierarchy level.
+      let isMatch = false;
+      let nextIndex = resourceIndex;
+      for (;;) {
+        if (matches(tokenIndex + 1, nextIndex)) {
+          isMatch = true;
+          break;
+        }
+        if (nextIndex >= resource.length || resource[nextIndex] === SEGMENT_SEPARATOR) {
+          break;
+        }
+        nextIndex += 1;
+      }
+
+      memo.set(memoKey, isMatch);
+      return isMatch;
+    }
+
+    // globstar ("**"): recursive wildcard — may cross any separator, including "/".
     let isMatch = false;
     for (let nextIndex = resourceIndex; nextIndex <= resource.length; nextIndex += 1) {
       if (matches(tokenIndex + 1, nextIndex)) {

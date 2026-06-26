@@ -32,7 +32,7 @@ export const healthcareTaxonomy: IndustryTaxonomy = {
   resourcePatterns: HEALTHCARE_RESOURCES,
   constraintTemplates: HEALTHCARE_CONSTRAINTS,
   mandateTemplates: HEALTHCARE_TEMPLATES,
-  semanticGraph: HEALTHCARE_SEMANTIC_GRAPH as any
+  semanticGraph: HEALTHCARE_SEMANTIC_GRAPH
 };
 
 export default healthcareTaxonomy;

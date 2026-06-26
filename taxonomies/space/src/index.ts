@@ -46,7 +46,7 @@ export const spaceTaxonomy: IndustryTaxonomy = {
   resourcePatterns: SPACE_RESOURCES,
   constraintTemplates: SPACE_CONSTRAINTS,
   mandateTemplates: SPACE_TEMPLATES,
-  semanticGraph: SPACE_SEMANTIC_GRAPH as any,
+  semanticGraph: SPACE_SEMANTIC_GRAPH,
 };
 
 export default spaceTaxonomy;

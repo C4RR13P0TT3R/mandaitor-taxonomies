@@ -464,4 +464,166 @@ describe("validateSemanticGraph", () => {
     const result = validateSemanticGraph(graph, taxonomy);
     expect(result.valid).toBe(false);
   });
+
+  it("should reject a non-numeric weight (NaN)", () => {
+    const taxonomy = makeTestTaxonomy();
+    const graph: SemanticGraph = {
+      taxonomyId: "test",
+      schemaVersion: "1.0.0",
+      edges: [
+        {
+          from: "test.validation.approve",
+          to: "test.validation.reject",
+          type: "CONFLICTS",
+          weight: Number.NaN,
+          bidirectional: true,
+        },
+      ],
+      clusters: [],
+    };
+    const result = validateSemanticGraph(graph, taxonomy);
+    expect(result.valid).toBe(false);
+  });
+});
+
+// ── #5: inferSemanticGraph token-boundary matching ──
+describe("inferSemanticGraph token-boundary matching", () => {
+  it("does not match an escalation trigger as a mere substring of an id", () => {
+    // "flagship_review" contains "flag" as a SUBSTRING but not as a word token,
+    // so it must NOT be treated as the "flag" escalation trigger.
+    const taxonomy: IndustryTaxonomy = {
+      metadata: testMetadata,
+      actions: [
+        {
+          id: "test.fleet.flagship_review",
+          label: "Flagship Review",
+          description: "Review the flagship vessel",
+          riskLevel: "LOW",
+          requiresHumanApproval: false,
+          tags: ["fleet"],
+        },
+        {
+          id: "test.safety.halt",
+          label: "Halt",
+          description: "Emergency halt",
+          riskLevel: "CRITICAL",
+          requiresHumanApproval: true,
+          tags: ["safety"],
+        },
+      ],
+      resourcePatterns: [],
+      constraintTemplates: [],
+      mandateTemplates: [],
+    };
+    const graph = inferSemanticGraph(taxonomy);
+    const flagshipEscalation = graph.edges.find(
+      (e) => e.type === "ESCALATES_TO" && e.from === "test.fleet.flagship_review",
+    );
+    expect(flagshipEscalation).toBeUndefined();
+  });
+
+  it("still infers escalation when the trigger is a real word token of the id", () => {
+    // "flag_navigation_risk" → tokens include "flag" → should escalate to "halt".
+    const taxonomy: IndustryTaxonomy = {
+      metadata: testMetadata,
+      actions: [
+        {
+          id: "test.incident.flag_navigation_risk",
+          label: "Flag Navigation Risk",
+          description: "Flag a navigation risk",
+          riskLevel: "HIGH",
+          requiresHumanApproval: true,
+          tags: ["incident"],
+        },
+        {
+          id: "test.safety.halt",
+          label: "Halt",
+          description: "Emergency halt",
+          riskLevel: "CRITICAL",
+          requiresHumanApproval: true,
+          tags: ["safety"],
+        },
+      ],
+      resourcePatterns: [],
+      constraintTemplates: [],
+      mandateTemplates: [],
+    };
+    const graph = inferSemanticGraph(taxonomy);
+    const flagToHalt = graph.edges.find(
+      (e) =>
+        e.type === "ESCALATES_TO" &&
+        e.from === "test.incident.flag_navigation_risk" &&
+        e.to === "test.safety.halt",
+    );
+    expect(flagToHalt).toBeDefined();
+  });
+
+  it("preserves the existing fixture's inferred ESCALATES_TO (flag → halt)", () => {
+    const graph = inferSemanticGraph(makeTestTaxonomy());
+    const flagToHalt = graph.edges.find(
+      (e) => e.type === "ESCALATES_TO" && e.from.includes("flag") && e.to.includes("halt"),
+    );
+    expect(flagToHalt).toBeDefined();
+  });
+});
+
+// ── #6: single-source distances + heap identical to per-pair Dijkstra ──
+describe("distancesFrom / neighborhood parity", () => {
+  it("distancesFrom matches semanticDistance for every target", () => {
+    const engine = new SemanticGraphEngine(makeExplicitGraph());
+    const sources = [
+      "test.validation.flag",
+      "test.validation.approve",
+      "test.documentation.generate",
+    ];
+    const targets = [
+      "test.validation.flag",
+      "test.validation.approve",
+      "test.validation.reject",
+      "test.safety.halt",
+      "test.documentation.generate",
+    ];
+    for (const source of sources) {
+      const distances = engine.distancesFrom(source);
+      for (const target of targets) {
+        const single = engine.semanticDistance(source, target).distance;
+        // Consumers treat an absent key as "unreachable" (1.0); mirror that here.
+        const fromMap = distances.get(target) ?? 1.0;
+        expect(fromMap).toBeCloseTo(single, 10);
+      }
+    }
+  });
+
+  it("semanticNeighborhood is unchanged by the single-pass rewrite", () => {
+    const engine = new SemanticGraphEngine(makeExplicitGraph());
+    const source = "test.validation.flag";
+    const maxDistance = 0.5;
+    // Re-derive the neighborhood the slow way (per-candidate semanticDistance)
+    const expected = new Set<string>();
+    for (const candidate of [
+      "test.validation.approve",
+      "test.validation.reject",
+      "test.safety.halt",
+      "test.documentation.generate",
+    ]) {
+      if (engine.semanticDistance(source, candidate).distance <= maxDistance) {
+        expected.add(candidate);
+      }
+    }
+    expect(new Set(engine.semanticNeighborhood(source, maxDistance))).toEqual(expected);
+  });
+
+  it("intentCoverage is unchanged by the cached single-pass rewrite", () => {
+    const engine = new SemanticGraphEngine(makeExplicitGraph());
+    // Partial coverage path exercises the semantic-distance branch.
+    expect(engine.intentCoverage(["test.validation.flag"], "test.validation")).toBeGreaterThan(0);
+    expect(engine.intentCoverage(["test.validation.flag"], "test.validation")).toBeLessThan(1);
+    // Full coverage.
+    expect(
+      engine.intentCoverage(
+        ["test.validation.approve", "test.validation.reject", "test.validation.flag"],
+        "test.validation",
+      ),
+    ).toBe(1.0);
+  });
 });

@@ -43,7 +43,7 @@ export const constructionTaxonomy: IndustryTaxonomy = {
   resourcePatterns: CONSTRUCTION_RESOURCES,
   constraintTemplates: CONSTRUCTION_CONSTRAINTS,
   mandateTemplates: CONSTRUCTION_TEMPLATES,
-  semanticGraph: CONSTRUCTION_SEMANTIC_GRAPH as any,
+  semanticGraph: CONSTRUCTION_SEMANTIC_GRAPH,
 };
 
 export default constructionTaxonomy;

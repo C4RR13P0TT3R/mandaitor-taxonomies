@@ -32,7 +32,7 @@ export const realestateTaxonomy: IndustryTaxonomy = {
   resourcePatterns: REALESTATE_RESOURCES,
   constraintTemplates: REALESTATE_CONSTRAINTS,
   mandateTemplates: REALESTATE_TEMPLATES,
-  semanticGraph: REALESTATE_SEMANTIC_GRAPH as any,
+  semanticGraph: REALESTATE_SEMANTIC_GRAPH,
 };
 
 export default realestateTaxonomy;

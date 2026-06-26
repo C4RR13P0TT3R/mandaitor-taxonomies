@@ -40,7 +40,7 @@ export const aviationTaxonomy: IndustryTaxonomy = {
   resourcePatterns: AVIATION_RESOURCES,
   constraintTemplates: AVIATION_CONSTRAINTS,
   mandateTemplates: AVIATION_TEMPLATES,
-  semanticGraph: AVIATION_SEMANTIC_GRAPH as any,
+  semanticGraph: AVIATION_SEMANTIC_GRAPH,
 };
 
 export default aviationTaxonomy;
