@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.4](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v2.0.3...v2.0.4) (2026-07-01)
+
+
+### Bug Fixes
+
+* **core,scripts,ci:** semver-correct latest selection, export-name fallback, supply-chain hardening ([b06d6d0](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/b06d6d0fc7ec1427c458c2f8e72d2455a04ea1c9))
+
 ## [2.0.3](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v2.0.2...v2.0.3) (2026-06-16)
 
 
