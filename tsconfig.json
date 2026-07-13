@@ -15,10 +15,9 @@
     "sourceMap": true,
     "outDir": "dist",
     "rootDir": "src",
-    "baseUrl": ".",
     "paths": {
-      "@mandaitor/taxonomy-core": ["packages/core/dist/index.d.ts"],
-      "@mandaitor/taxonomy-core/schema": ["packages/core/dist/schema.d.ts"]
+      "@mandaitor/taxonomy-core": ["./packages/core/dist/index.d.ts"],
+      "@mandaitor/taxonomy-core/schema": ["./packages/core/dist/schema.d.ts"]
     }
   },
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
