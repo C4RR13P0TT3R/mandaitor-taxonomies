@@ -75,16 +75,23 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
-          version: 9
+          version: 11
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: .nvmrc
-          cache: pnpm
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile --config.strict-dep-builds=false
+          # pnpm 11 requires Node >= 22.13 (uses node:sqlite). This audit
+          # job only scans the lockfile, so it is decoupled from the repo's
+          # pinned runtime Node (.nvmrc = 20).
+          node-version: "22"
       - name: Run pnpm audit
-        run: pnpm audit --prod --audit-level=high
+        # pnpm audit reads pnpm-lock.yaml directly — no install needed.
+        # pnpm 11 queries npm's bulk advisory endpoint; pnpm <=10 called the
+        # legacy /-/npm/v1/security/audits endpoint, which npm retired (HTTP 410).
+        # --prod is intentionally dropped: this workspace keeps runtime deps in
+        # member packages (the root has only devDependencies), so pnpm 11's
+        # --prod filter audits 0 packages. The full locked tree is scanned at
+        # the same high+ threshold instead.
+        run: pnpm audit --audit-level=high
       - name: Audit summary
         run: |
           echo "## Dependency Audit" >> "$GITHUB_STEP_SUMMARY"
