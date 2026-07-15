@@ -79,7 +79,10 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: .nvmrc
+          # pnpm 11 requires Node >= 22.13 (uses node:sqlite). This audit
+          # job only scans the lockfile, so it is decoupled from the repo's
+          # pinned runtime Node (.nvmrc = 20).
+          node-version: "22"
       - name: Run pnpm audit
         # pnpm audit reads pnpm-lock.yaml directly — no install needed.
         # pnpm 11 queries npm's bulk advisory endpoint; pnpm <=10 called the
