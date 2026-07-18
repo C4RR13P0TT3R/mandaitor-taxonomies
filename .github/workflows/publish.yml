@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Existing release tag to backfill (for example v1.3.0)"
+        description: "Existing release tag to backfill (component tag like taxonomy-core-v0.4.0, or legacy vX.Y.Z)"
         required: true
         type: string
       url:
@@ -74,6 +74,14 @@ jobs:
         with:
           ref: ${{ env.RELEASE_TAG }}
 
+      # Hard guard against the "release tagged but versions never bumped"
+      # failure mode: for a component tag (taxonomy-core-v0.4.0) the tagged
+      # package's package.json version must match the tag, or this run would
+      # be a silent no-op. Legacy root tags (vX.Y.Z) are allowed for
+      # backfills, with a warning. Also exports TAG_KIND for later steps.
+      - name: Guard release tag against package versions
+        run: node scripts/release-tools.mjs check-tag "$RELEASE_TAG"
+
       # pnpm >= 10.13 is required for npm Trusted Publishing (OIDC): it
       # exchanges the GitHub id-token directly with npm during publish,
       # so no static NPM_TOKEN secret is needed anymore.
@@ -122,6 +130,12 @@ jobs:
           fi
           echo "No scaffold TODOs found in source files"
 
+      # Record which workspace versions are already on the registry, so the
+      # post-publish step can compute exactly what THIS run published.
+      - name: Snapshot registry state
+        if: github.event_name != 'workflow_dispatch' || inputs.skip_publish == false
+        run: node scripts/release-tools.mjs snapshot /tmp/pre-publish.json
+
       - name: Publish packages
         if: github.event_name != 'workflow_dispatch' || inputs.skip_publish == false
         # npm Trusted Publishing (OIDC): pnpm 10.13+ authenticates via the
@@ -131,6 +145,43 @@ jobs:
         # pnpm -r publish also resolves the workspace:* dependency on
         # @mandaitor/taxonomy-core to concrete versions in the tarballs.
         run: pnpm -r publish --no-git-checks --access public --provenance
+
+      # Verify against the registry (not pnpm's output): every workspace
+      # version must exist on npm after this step, and the delta of what this
+      # run actually published is written for the manifest/dispatch/summary.
+      - name: Verify publish against registry
+        if: github.event_name != 'workflow_dispatch' || inputs.skip_publish == false
+        run: |
+          node scripts/release-tools.mjs verify /tmp/pre-publish.json /tmp/publish-delta.json
+          COUNT=$(python3 -c "import json; print(len(json.load(open('/tmp/publish-delta.json'))['published']))")
+          echo "PUBLISHED_COUNT=$COUNT" >> "$GITHUB_ENV"
+
+      - name: Record skipped publish
+        if: github.event_name == 'workflow_dispatch' && inputs.skip_publish == true
+        run: |
+          echo '{"published": [], "already_published": [], "missing": [], "skipped": true}' > /tmp/publish-delta.json
+          echo "PUBLISHED_COUNT=0" >> "$GITHUB_ENV"
+
+      # Zero-publish policy: a release run that publishes nothing is an error
+      # unless a sibling run already pushed the tagged component's version
+      # (release-please cuts one release per component, so a multi-package
+      # merge triggers several runs and the first one publishes everything).
+      # Legacy root tags have no per-run component, so zero publishes there
+      # means the tag carries no new versions — the exact v2.0.x failure.
+      - name: Enforce zero-publish policy
+        if: github.event_name != 'workflow_dispatch' || inputs.skip_publish == false
+        run: |
+          if [ "$PUBLISHED_COUNT" != "0" ]; then
+            echo "Published $PUBLISHED_COUNT package version(s) in this run."
+            exit 0
+          fi
+          if [ "$TAG_KIND" = "component" ]; then
+            echo "::notice::No packages published in this run; $TAG_COMPONENT@$TAG_VERSION is already on the registry (published by a sibling release run). Nothing to do."
+            exit 0
+          fi
+          echo "::error::This release run published nothing: every workspace package version already exists on npm."
+          echo "::error::That means the release tag '$RELEASE_TAG' carries no new package versions. Bump package versions via a release-please release PR, then release again."
+          exit 1
 
       - name: Generate release manifest
         run: |
@@ -145,12 +196,20 @@ jobs:
 
           Path('/tmp/tag.txt').write_text(f'{tag}\n', encoding='utf-8')
 
+          # What this run actually pushed to npm (registry-verified) — the
+          # manifest must describe reality, not just the package.json files.
+          delta = json.loads(Path('/tmp/publish-delta.json').read_text(encoding='utf-8'))
+          published_now = {(p['name'], p['version']) for p in delta['published']}
+
           manifest = {
               'tag': tag,
               'url': url,
               'prerelease': prerelease,
               'packages': [],
               'taxonomies': [],
+              'published_packages': sorted(
+                  f"{p['name']}@{p['version']}" for p in delta['published']
+              ),
           }
 
           for package_file in sorted(Path('packages').glob('*/package.json')):
@@ -161,6 +220,7 @@ jobs:
                   'description': pkg.get('description', ''),
                   'kind': 'core',
                   'slug': package_file.parent.name,
+                  'published_in_this_run': (pkg['name'], pkg['version']) in published_now,
               })
 
           for package_file in sorted(Path('taxonomies').glob('*/package.json')):
@@ -171,6 +231,7 @@ jobs:
                   'description': pkg.get('description', ''),
                   'kind': 'taxonomy',
                   'slug': package_file.parent.name,
+                  'published_in_this_run': (pkg['name'], pkg['version']) in published_now,
               }
               manifest['packages'].append(item)
               manifest['taxonomies'].append({
@@ -192,8 +253,11 @@ jobs:
           name: taxonomy-release-manifest-${{ env.RELEASE_TAG }}
           path: /tmp/release-manifest.json
 
+      # Only tell downstream repos about a release when this run actually
+      # pushed packages to npm — dispatching on a no-op run (the old
+      # behaviour) made ops/public act on releases that never happened.
       - name: Dispatch downstream automation
-        if: env.RELEASE_PRERELEASE != 'true'
+        if: env.RELEASE_PRERELEASE != 'true' && env.PUBLISHED_COUNT != '0'
         env:
           GH_TOKEN: ${{ secrets.CROSS_REPO_TOKEN }}
         run: |
@@ -215,6 +279,7 @@ jobs:
                   'tag': manifest['tag'],
                   'url': manifest['url'],
                   'prerelease': manifest['prerelease'],
+                  'published_packages': manifest.get('published_packages', []),
               },
           }
 
@@ -244,25 +309,33 @@ jobs:
 
       - name: Publish summary
         run: |
-          TAXONOMY_COUNT=$(python3 - <<'PY'
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
           import json
+          import os
           from pathlib import Path
-          manifest = json.loads(Path('/tmp/release-manifest.json').read_text(encoding='utf-8'))
-          print(len(manifest['taxonomies']))
-          PY
-          )
-          PACKAGE_COUNT=$(python3 - <<'PY'
-          import json
-          from pathlib import Path
-          manifest = json.loads(Path('/tmp/release-manifest.json').read_text(encoding='utf-8'))
-          print(len(manifest['packages']))
-          PY
-          )
 
-          echo "## Taxonomy Packages Published" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "Release: \`${RELEASE_TAG}\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "Registry: https://www.npmjs.com/org/mandaitor" >> "$GITHUB_STEP_SUMMARY"
-          echo "Packages published: ${PACKAGE_COUNT}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Taxonomies in release: ${TAXONOMY_COUNT}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Downstream targets: mandaitor-ops, mandaitor-public" >> "$GITHUB_STEP_SUMMARY"
+          manifest = json.loads(Path('/tmp/release-manifest.json').read_text(encoding='utf-8'))
+          delta = json.loads(Path('/tmp/publish-delta.json').read_text(encoding='utf-8'))
+          published = manifest.get('published_packages', [])
+
+          print('## Taxonomy Release Run')
+          print()
+          print(f"Release: `{os.environ['RELEASE_TAG']}`")
+          print('Registry: https://www.npmjs.com/org/mandaitor')
+          if delta.get('skipped'):
+              print()
+              print('Publish was skipped (`skip_publish` dispatch) — manifest regenerated only.')
+          elif published:
+              print(f'Packages published in this run: {len(published)}')
+              print()
+              for entry in published:
+                  print(f'- `{entry}`')
+              print()
+              print('Downstream dispatch: mandaitor-ops, mandaitor-public')
+          else:
+              print('Packages published in this run: 0 — all workspace versions were already on the registry.')
+              print('Downstream dispatch: skipped (nothing new was published).')
+          print()
+          print(f"Already on registry: {len(delta.get('already_published', []))}")
+          print(f"Taxonomies in repo: {len(manifest['taxonomies'])}")
+          PY
