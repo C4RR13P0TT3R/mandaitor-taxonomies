@@ -74,10 +74,13 @@ jobs:
         with:
           ref: ${{ env.RELEASE_TAG }}
 
+      # pnpm >= 10.13 is required for npm Trusted Publishing (OIDC): it
+      # exchanges the GitHub id-token directly with npm during publish,
+      # so no static NPM_TOKEN secret is needed anymore.
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
-          version: 9
+          version: 10
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -89,14 +92,14 @@ jobs:
 
       - name: Install dependencies
         # --ignore-scripts prevents transitive dependency lifecycle scripts
-        # (preinstall/install/postinstall/prepare) from executing in this job,
-        # which holds the npm publish token (NODE_AUTH_TOKEN below). Workspace
-        # packages are built explicitly in the next step, so no needed build is
-        # skipped by suppressing dependency scripts here.
+        # (preinstall/install/postinstall/prepare) from executing in this
+        # OIDC-capable publish job. Workspace packages are built explicitly
+        # in the next step, so no needed build is skipped by suppressing
+        # dependency scripts here.
         run: pnpm install --frozen-lockfile --ignore-scripts --config.strict-dep-builds=false
 
       # Order is deliberate: install (--ignore-scripts) -> build -> publish, so
-      # our own packages are compiled before the token-bearing publish step.
+      # our own packages are compiled before the OIDC-authenticated publish step.
       - name: Build all packages
         run: pnpm run build
 
@@ -121,12 +124,13 @@ jobs:
 
       - name: Publish packages
         if: github.event_name != 'workflow_dispatch' || inputs.skip_publish == false
-        # TODO: Replace the long-lived NPM_TOKEN with npm OIDC trusted publishing
-        # (id-token: write is already granted on this job) so no static publish
-        # credential needs to be stored as a repo secret.
+        # npm Trusted Publishing (OIDC): pnpm 10.13+ authenticates via the
+        # GitHub id-token (id-token: write is granted on this job). Requires a
+        # Trusted Publisher entry on npmjs.com for every package in this repo
+        # (org C4RR13P0TT3R, repo mandaitor-taxonomies, workflow publish.yml).
+        # pnpm -r publish also resolves the workspace:* dependency on
+        # @mandaitor/taxonomy-core to concrete versions in the tarballs.
         run: pnpm -r publish --no-git-checks --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Generate release manifest
         run: |
