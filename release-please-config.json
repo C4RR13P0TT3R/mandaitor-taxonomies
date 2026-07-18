@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "node",
+  "separate-pull-requests": false,
+  "plugins": ["node-workspace"],
+  "bootstrap-sha": "6bbab077b7093a27732e227eb1c08e56d594ea20",
+  "packages": {
+    "packages/core": { "component": "taxonomy-core" },
+    "taxonomies/aviation": { "component": "taxonomy-aviation" },
+    "taxonomies/construction": { "component": "taxonomy-construction" },
+    "taxonomies/defence-isr": { "component": "taxonomy-defence-isr" },
+    "taxonomies/healthcare": { "component": "taxonomy-healthcare" },
+    "taxonomies/maritime": { "component": "taxonomy-maritime" },
+    "taxonomies/realestate": { "component": "taxonomy-realestate" },
+    "taxonomies/space": { "component": "taxonomy-space" },
+    "taxonomies/venture": { "component": "taxonomy-venture" }
+  }
+}

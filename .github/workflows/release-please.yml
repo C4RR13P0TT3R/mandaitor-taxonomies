@@ -13,7 +13,15 @@ jobs:
     name: Create Release PR
     runs-on: ubuntu-latest
     steps:
+      # Manifest (monorepo) mode: every publishable workspace package is
+      # versioned independently via release-please-config.json +
+      # .release-please-manifest.json. Merging the release PR bumps each
+      # changed package's package.json/CHANGELOG and cuts one GitHub release
+      # per component with tags like `taxonomy-core-v0.4.0` — which is what
+      # publish.yml keys on. The root package.json version is no longer
+      # release-managed (it is private and never published).
       - uses: googleapis/release-please-action@v5
         with:
           token: ${{ secrets.CROSS_REPO_TOKEN || secrets.GITHUB_TOKEN }}
-          release-type: node
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
