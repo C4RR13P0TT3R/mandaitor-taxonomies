@@ -57,7 +57,7 @@ function loadWorkspacePackages() {
 }
 
 async function versionOnRegistry(name, version) {
-  const url = `${REGISTRY}/${name.replace("/", "%2F")}`;
+  const url = `${REGISTRY}/${encodeURIComponent(name)}`;
   const res = await fetch(url, { headers: { accept: "application/json" } });
   if (res.status === 404) return false;
   if (!res.ok) {
