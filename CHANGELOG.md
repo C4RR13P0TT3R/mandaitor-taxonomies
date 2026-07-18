@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.5](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v2.0.4...v2.0.5) (2026-07-18)
+
+
+### Bug Fixes
+
+* **tsconfig:** drop removed baseUrl, use relative path mappings ([6e387f9](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/commit/6e387f9a5e0f12977965b8047276735073e084c4))
+
 ## [2.0.4](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/v2.0.3...v2.0.4) (2026-07-01)
 
 
