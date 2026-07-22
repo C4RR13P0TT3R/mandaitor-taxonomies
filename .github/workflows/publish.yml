@@ -138,13 +138,17 @@ jobs:
 
       - name: Publish packages
         if: github.event_name != 'workflow_dispatch' || inputs.skip_publish == false
-        # npm Trusted Publishing (OIDC): pnpm 10.13+ authenticates via the
-        # GitHub id-token (id-token: write is granted on this job). Requires a
-        # Trusted Publisher entry on npmjs.com for every package in this repo
-        # (org C4RR13P0TT3R, repo mandaitor-taxonomies, workflow publish.yml).
-        # pnpm -r publish also resolves the workspace:* dependency on
-        # @mandaitor/taxonomy-core to concrete versions in the tarballs.
+        # Token auth: the Setup Node.js step wrote an .npmrc whose _authToken
+        # reads ${NODE_AUTH_TOKEN}, supplied here from the NPM_TOKEN repo secret
+        # — a granular/automation token with publish rights to the @mandaitor
+        # scope. Without this env the token is empty and npm returns a 404 on
+        # the publish PUT. --provenance still uses the job's OIDC id-token
+        # (id-token: write) to attach a provenance attestation. pnpm -r publish
+        # also resolves the workspace:* dependency on @mandaitor/taxonomy-core
+        # to concrete versions in the tarballs.
         run: pnpm -r publish --no-git-checks --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Verify against the registry (not pnpm's output): every workspace
       # version must exist on npm after this step, and the delta of what this
