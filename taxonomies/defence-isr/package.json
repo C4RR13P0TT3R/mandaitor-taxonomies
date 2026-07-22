@@ -1,7 +1,7 @@
 {
   "name": "@mandaitor/taxonomy-defence-isr",
-  "version": "1.2.0",
-  "description": "Defence and ISR taxonomy for Mandaitor \u2014 intelligence analysis, mission authorization, kinetic decision support, sensor tasking, and escalation workflows",
+  "version": "1.2.1",
+  "description": "Defence and ISR taxonomy for Mandaitor — intelligence analysis, mission authorization, kinetic decision support, sensor tasking, and escalation workflows",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
