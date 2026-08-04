@@ -4,6 +4,8 @@
   "separate-pull-requests": false,
   "plugins": ["node-workspace"],
   "bootstrap-sha": "6bbab077b7093a27732e227eb1c08e56d594ea20",
+  "release-search-depth": 100,
+  "commit-search-depth": 200,
   "packages": {
     "packages/core": { "component": "taxonomy-core" },
     "taxonomies/aviation": { "component": "taxonomy-aviation" },
