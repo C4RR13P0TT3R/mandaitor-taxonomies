@@ -4,3 +4,15 @@ packages:
 
 onlyBuiltDependencies:
   - esbuild@0.21.5
+
+# Dependency overrides — the ONLY place pnpm still reads them.
+#
+# These used to live under the "pnpm" key in package.json, which modern pnpm
+# ignores outright: the overrides stopped being applied, AND the lockfile kept
+# recording them, so the current config no longer matched it — the
+# ERR_PNPM_LOCKFILE_CONFIG_MISMATCH that broke --frozen-lockfile in CI.
+overrides:
+  "brace-expansion": ">=5.0.9"  # GHSA-rgw5-rvv9-x895 — DoS via unbounded expansion
+  "esbuild": ">=0.28.1"
+  "fast-uri": ">=3.1.5"  # GHSA-7p8r-x3mc-p8w7 — host confusion via backslash
+  "postcss": ">=8.5.10"

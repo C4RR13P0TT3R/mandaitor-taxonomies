@@ -24,11 +24,5 @@
     "node": ">=20.0.0",
     "pnpm": ">=9.0.0"
   },
-  "license": "Apache-2.0",
-  "pnpm": {
-    "overrides": {
-      "postcss": ">=8.5.10",
-      "esbuild": ">=0.28.1"
-    }
-  }
+  "license": "Apache-2.0"
 }
