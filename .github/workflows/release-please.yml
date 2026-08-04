@@ -3,6 +3,9 @@ name: Release Please
 on:
   push:
     branches: [main]
+  # Manual re-fire for runs lost to transient failures (e.g. API rate
+  # limits on the shared token) without needing another push to main.
+  workflow_dispatch:
 
 permissions:
   contents: write
