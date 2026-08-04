@@ -82,6 +82,24 @@ jobs:
       - name: Guard release tag against package versions
         run: node scripts/release-tools.mjs check-tag "$RELEASE_TAG"
 
+      # Backfill compatibility: tags cut before the repo pinned pnpm via
+      # "packageManager" (and before the overrides moved to
+      # pnpm-workspace.yaml) cannot drive pnpm/action-setup or a frozen
+      # install. For those old states, overlay the CURRENT build harness
+      # from main — root package.json, workspace config, lockfile, .nvmrc,
+      # release scripts — while the published package sources stay exactly
+      # at the tag. Release-event publishes of modern tags never hit this.
+      - name: Modernize build harness for backfill tags
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if node -e "process.exit(require('./package.json').packageManager ? 1 : 0)"; then
+            echo "Pre-packageManager tag detected — overlaying current build harness from main."
+            git fetch --depth=1 origin main
+            git checkout FETCH_HEAD -- package.json pnpm-workspace.yaml pnpm-lock.yaml .nvmrc scripts/
+          else
+            echo "Tag carries its own packageManager pin — no overlay needed."
+          fi
+
       # pnpm >= 10.13 is required for npm Trusted Publishing (OIDC): it
       # exchanges the GitHub id-token directly with npm during publish,
       # so no static NPM_TOKEN secret is needed anymore.
@@ -102,7 +120,14 @@ jobs:
         # OIDC-capable publish job. Workspace packages are built explicitly
         # in the next step, so no needed build is skipped by suppressing
         # dependency scripts here.
-        run: pnpm install --frozen-lockfile --ignore-scripts --config.strict-dep-builds=false
+        # Frozen install first; for backfill tags whose per-package specs
+        # drifted from main's lockfile importers, fall back to a re-resolve
+        # rather than failing the backfill.
+        run: |
+          pnpm install --frozen-lockfile --ignore-scripts --config.strict-dep-builds=false || {
+            echo "::warning::Frozen install failed (backfill-tag drift vs current lockfile) — retrying with --no-frozen-lockfile."
+            pnpm install --no-frozen-lockfile --ignore-scripts --config.strict-dep-builds=false
+          }
 
       # Order is deliberate: install (--ignore-scripts) -> build -> publish, so
       # our own packages are compiled before the OIDC-authenticated publish step.
