@@ -69,13 +69,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: 11
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
@@ -87,11 +85,15 @@ jobs:
         # pnpm audit reads pnpm-lock.yaml directly — no install needed.
         # pnpm 11 queries npm's bulk advisory endpoint; pnpm <=10 called the
         # legacy /-/npm/v1/security/audits endpoint, which npm retired (HTTP 410).
+        # Run pnpm 11 via corepack rather than pnpm/action-setup — the action
+        # errors when its version input disagrees with the packageManager field
+        # (pnpm 10, used for installs); --pm-on-fail=ignore skips pnpm's own
+        # check of that same field.
         # --prod is intentionally dropped: this workspace keeps runtime deps in
         # member packages (the root has only devDependencies), so pnpm 11's
         # --prod filter audits 0 packages. The full locked tree is scanned at
         # the same high+ threshold instead.
-        run: pnpm audit --audit-level=high
+        run: corepack pnpm@11 --pm-on-fail=ignore audit --audit-level=high
       - name: Audit summary
         run: |
           echo "## Dependency Audit" >> "$GITHUB_STEP_SUMMARY"
