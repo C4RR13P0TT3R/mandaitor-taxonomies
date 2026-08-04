@@ -15,4 +15,4 @@ overrides:
   "brace-expansion": ">=5.0.9"  # GHSA-rgw5-rvv9-x895 — DoS via unbounded expansion
   "esbuild": ">=0.28.1"
   "fast-uri": ">=3.1.5"  # GHSA-7p8r-x3mc-p8w7 — host confusion via backslash
-  "postcss": ">=8.5.10"
+  "postcss": ">=8.5.23"  # incomplete fix of GHSA-6g55-p6wh-862q — .map read via sourceMappingURL
