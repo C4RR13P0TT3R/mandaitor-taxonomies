@@ -3,3 +3,7 @@ dist/
 *.tsbuildinfo
 .DS_Store
 *.log
+
+# npm lockfile — this repo installs with pnpm only (see packageManager);
+# a stray package-lock.json double-reports every Dependabot alert.
+package-lock.json
