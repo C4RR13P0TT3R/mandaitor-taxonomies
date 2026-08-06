@@ -11,6 +11,16 @@ permissions:
   contents: write
   pull-requests: write
 
+# Merge bursts fire one full 9-component crawl per push; back-to-back runs
+# recompute the same state and can exhaust the token owner's hourly API
+# quota by themselves (Aug 4 and Aug 6 incidents — four merges in twenty
+# minutes preceded 'API rate limit already exceeded'). Superseded runs are
+# cancelled so only the newest crawl completes; release-please is
+# idempotent, so only the latest state matters.
+concurrency:
+  group: release-please
+  cancel-in-progress: true
+
 jobs:
   release-please:
     name: Create Release PR
@@ -24,13 +34,16 @@ jobs:
       # publish.yml keys on. The root package.json version is no longer
       # release-managed (it is private and never published).
       # RELEASE_PLEASE_TOKEN is a dedicated fine-grained PAT scoped to this
-      # repo (contents + pull-requests read/write). It replaced the shared
-      # CROSS_REPO_TOKEN after Aug 4, when that PAT sat rate-limited for 90+
-      # consecutive minutes (some other consumer drains its 5000/h quota) and
-      # every release-please run died on 'API rate limit already exceeded'.
-      # A PAT (not GITHUB_TOKEN) is still required so the release PRs it
-      # opens trigger CI — GITHUB_TOKEN-created PRs never start workflows,
-      # which would leave required checks permanently pending.
+      # repo (contents + pull-requests read/write). Note: ALL of a user's
+      # PATs draw from the same 5,000/h per-user quota, so a dedicated PAT
+      # isolates scopes but cannot dodge user-level exhaustion — the Aug 4
+      # and Aug 6 'API rate limit already exceeded for user ID' failures hit
+      # regardless of which secret was used. True quota isolation needs a
+      # GitHub App installation token (own 5,000/h pool), which can be fed
+      # into this same input via actions/create-github-app-token.
+      # A PAT/app token (not GITHUB_TOKEN) is still required so the release
+      # PRs it opens trigger CI — GITHUB_TOKEN-created PRs never start
+      # workflows, which would leave required checks permanently pending.
       - uses: googleapis/release-please-action@v5
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.CROSS_REPO_TOKEN || secrets.GITHUB_TOKEN }}
