@@ -189,7 +189,20 @@ jobs:
         # attestation from the same id-token. pnpm -r publish also resolves
         # the workspace:* dependency on @mandaitor/taxonomy-core to concrete
         # versions in the tarballs.
-        run: pnpm -r publish --no-git-checks --access public --provenance
+        #
+        # Provenance only for release-event publishes: npm validates the
+        # attestation against the published package.json's repository.url,
+        # and tags cut before that field existed can never pass (run 30:
+        # E422 'repository.url is "", expected ...'). Backfill dispatches
+        # therefore publish without attestation — sources at the tag stay
+        # untouched, and npm simply shows no provenance for those versions.
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Backfill dispatch — publishing without provenance (historical tags predate repository metadata)."
+            pnpm -r publish --no-git-checks --access public
+          else
+            pnpm -r publish --no-git-checks --access public --provenance
+          fi
 
       # Verify against the registry (not pnpm's output): every workspace
       # version must exist on npm after this step, and the delta of what this

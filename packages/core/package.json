@@ -32,5 +32,10 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/C4RR13P0TT3R/mandaitor-taxonomies.git",
+    "directory": "packages/core"
+  }
 }
