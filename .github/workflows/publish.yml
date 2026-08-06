@@ -198,7 +198,11 @@ jobs:
         # untouched, and npm simply shows no provenance for those versions.
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "Backfill dispatch — publishing without provenance (historical tags predate repository metadata)."
+            # Omitting --provenance is NOT enough: npm's trusted publishing
+            # auto-generates the attestation under OIDC (run 31 signed one
+            # with no flag present). It must be switched off explicitly.
+            echo "Backfill dispatch — provenance explicitly disabled (historical tags predate repository metadata)."
+            export NPM_CONFIG_PROVENANCE=false
             pnpm -r publish --no-git-checks --access public
           else
             pnpm -r publish --no-git-checks --access public --provenance
