@@ -82,7 +82,7 @@ async function verify(preFile, outFile) {
   const pre = JSON.parse(readFileSync(preFile, "utf8"));
   const published = [];
   const alreadyPublished = [];
-  const missing = [];
+  let missing = [];
   for (const pkg of pre) {
     const onRegistryNow = await versionOnRegistry(pkg.name, pkg.version);
     const record = { name: pkg.name, version: pkg.version, dir: pkg.dir };
@@ -90,6 +90,27 @@ async function verify(preFile, outFile) {
     else if (pkg.onRegistry) alreadyPublished.push(record);
     else missing.push(record);
   }
+
+  // Registry reads are eventually consistent: a version PUT seconds earlier
+  // can be absent from the packument for a while (run 32: 2 of 9 fresh
+  // versions lagged the immediate read, then appeared — the run false-failed
+  // and the downstream dispatch never fired). Re-poll stragglers before
+  // declaring the publish incomplete.
+  const RETRIES = 6;
+  const DELAY_MS = 10_000;
+  for (let attempt = 1; attempt <= RETRIES && missing.length > 0; attempt++) {
+    console.log(
+      `${missing.length} version(s) not visible yet — retrying in ${DELAY_MS / 1000}s (${attempt}/${RETRIES})...`,
+    );
+    await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
+    const still = [];
+    for (const record of missing) {
+      if (await versionOnRegistry(record.name, record.version)) published.push(record);
+      else still.push(record);
+    }
+    missing = still;
+  }
+
   const delta = { published, already_published: alreadyPublished, missing };
   writeFileSync(outFile, JSON.stringify(delta, null, 2) + "\n");
 
