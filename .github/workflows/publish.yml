@@ -106,13 +106,31 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
 
+      # Deliberately NO registry-url here: setup-node's registry-url writes a
+      # user-level .npmrc with `_authToken=${NODE_AUTH_TOKEN}` and points
+      # NPM_CONFIG_USERCONFIG at it. With NODE_AUTH_TOKEN unset (we publish
+      # tokenless), pnpm treats that entry as configured-but-broken
+      # credentials and SKIPS its OIDC trusted-publishing exchange — the PUT
+      # then goes out unauthenticated and npm answers E404 (run 28). Without
+      # the option no .npmrc is planted, pnpm finds no credentials, and the
+      # id-token exchange happens as intended. Installs and publishes both
+      # target the default public registry, so nothing else needs it.
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
-          registry-url: https://registry.npmjs.org
-          scope: "@mandaitor"
+
+      # pnpm publish delegates the registry PUT to the system npm, and npm
+      # >= 11.5.1 is what actually implements the OIDC token exchange —
+      # Node 20's bundled npm 10 has no trusted publishing and dies with
+      # ENEEDAUTH (backfill run 29). Pin the npm 11 line: npm@12 requires
+      # Node >= 22, which .nvmrc doesn't give us. Same pattern as
+      # mandaitor-core's publish workflow, where it is proven.
+      - name: Update npm for Trusted Publishing
+        run: |
+          npm install -g npm@11
+          npm --version
 
       - name: Install dependencies
         # --ignore-scripts prevents transitive dependency lifecycle scripts
