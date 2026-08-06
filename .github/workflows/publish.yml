@@ -121,6 +121,17 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
 
+      # pnpm publish delegates the registry PUT to the system npm, and npm
+      # >= 11.5.1 is what actually implements the OIDC token exchange —
+      # Node 20's bundled npm 10 has no trusted publishing and dies with
+      # ENEEDAUTH (backfill run 29). Pin the npm 11 line: npm@12 requires
+      # Node >= 22, which .nvmrc doesn't give us. Same pattern as
+      # mandaitor-core's publish workflow, where it is proven.
+      - name: Update npm for Trusted Publishing
+        run: |
+          npm install -g npm@11
+          npm --version
+
       - name: Install dependencies
         # --ignore-scripts prevents transitive dependency lifecycle scripts
         # (preinstall/install/postinstall/prepare) from executing in this
