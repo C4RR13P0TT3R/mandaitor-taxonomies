@@ -1,6 +1,6 @@
 {
   "name": "@mandaitor/taxonomy-maritime",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Maritime & Port Operations taxonomy for Mandaitor",
   "type": "module",
   "main": "dist/index.js",
