@@ -203,9 +203,31 @@ jobs:
             # with no flag present). It must be switched off explicitly.
             echo "Backfill dispatch — provenance explicitly disabled (historical tags predate repository metadata)."
             export NPM_CONFIG_PROVENANCE=false
-            pnpm -r publish --no-git-checks --access public
+            PUBLISH_FLAGS=""
           else
-            pnpm -r publish --no-git-checks --access public --provenance
+            PUBLISH_FLAGS="--provenance"
+          fi
+          # Release-please cuts one release per component, so a multi-package
+          # release fires several of these runs at once. The first one's
+          # `pnpm -r publish` ships EVERY workspace package; the others then
+          # die on E403 "cannot publish over the previously published
+          # versions" for work the winner already did (runs 33-41: one
+          # winner, eight conflict-failures). pnpm does not skip
+          # already-registry-present versions, so that conflict is the
+          # normal outcome of the fan-out, not a failure — tolerate it and
+          # let the registry-side verification below arbitrate whether every
+          # version actually made it. Any other publish error still fails.
+          set +e
+          OUTPUT=$(pnpm -r publish --no-git-checks --access public $PUBLISH_FLAGS 2>&1)
+          STATUS=$?
+          set -e
+          echo "$OUTPUT"
+          if [ "$STATUS" -ne 0 ]; then
+            if echo "$OUTPUT" | grep -q "cannot publish over"; then
+              echo "::notice::Version(s) already on the registry — a sibling release run (or prior attempt) published first. Registry verification decides completeness."
+            else
+              exit "$STATUS"
+            fi
           fi
 
       # Verify against the registry (not pnpm's output): every workspace
