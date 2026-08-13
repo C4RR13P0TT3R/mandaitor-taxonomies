@@ -1,8 +1,8 @@
 // @mandaitor/taxonomy-construction — Construction industry taxonomy
 //
-// This taxonomy covers the full construction lifecycle as used by monco.ai:
-// plan validation, scheduling, procurement, cost management, documentation,
-// defect management, and safety workflows.
+// This taxonomy covers the full construction lifecycle: plan validation,
+// scheduling, procurement, cost management, documentation, defect management,
+// and safety workflows.
 
 import type { IndustryTaxonomy } from "@mandaitor/taxonomy-core";
 import { CONSTRUCTION_ACTIONS } from "./actions.js";
@@ -26,7 +26,7 @@ export const constructionTaxonomy: IndustryTaxonomy = {
     version: "1.2.0",
     name: "Construction & Baumanagement",
     description:
-      "Industry taxonomy for construction project management covering BIM validation, scheduling, procurement, cost management, documentation, defect detection, and safety workflows. Designed for integration with monco.ai.",
+      "Industry taxonomy for construction project management covering BIM validation, scheduling, procurement, cost management, documentation, defect detection, and safety workflows. Designed as a reusable delegation baseline for general contractors, trade contractors, and construction software platforms.",
     maintainers: [
       {
         name: "Mandaitor Core Team",
@@ -35,9 +35,11 @@ export const constructionTaxonomy: IndustryTaxonomy = {
     ],
     license: "Apache-2.0",
     coreVersion: "0.3.0",
-    tags: ["construction", "bim", "monco", "baumanagement", "agentic-ai"],
+    tags: ["construction", "bim", "baumanagement", "agentic-ai"],
     documentationUrl: "https://trust.mandaitor.io",
-    standardUrl: "https://www.monco.ai",
+    // buildingSMART maintains IFC (ISO 16739), the open data standard the
+    // model, zone, and trade resource types in this taxonomy align with.
+    standardUrl: "https://www.buildingsmart.org",
   },
   actions: CONSTRUCTION_ACTIONS,
   resourcePatterns: CONSTRUCTION_RESOURCES,

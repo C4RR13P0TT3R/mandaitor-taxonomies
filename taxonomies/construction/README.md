@@ -39,13 +39,31 @@ registerTaxonomy(constructionTaxonomy);
 
 | Resource Pattern | Purpose |
 | :--- | :--- |
-| `project:zone:installation` | Specific installation within a project zone |
-| `project:zone` | Entire zone within a construction project |
-| `project` | Project-wide scope for cross-zone operations |
+| `construction:project:{projectId}/zone:{zoneId}/trade:{tradeId}/*` | Specific trade within a project zone |
+| `construction:project:{projectId}/zone:{zoneId}/*` | Entire zone across all trades |
+| `construction:project:{projectId}/*` | Project-wide scope for cross-zone operations |
+| `construction:project:{projectId}/schedule:{scheduleId}` | A specific project schedule |
+| `construction:project:{projectId}/procurement:{orderId}` | A specific procurement order |
+| `construction:project:{projectId}/invoice:{invoiceId}` | A specific invoice |
+| `construction:project:{projectId}/defect:{defectId}` | A specific defect report |
 
 ## Governance Notes
 
-The construction taxonomy is designed for integration with platforms like monco.ai. It enforces the principle that validation approvals require prior inspection, and that safety halts override all other ongoing operations. The semantic graph captures these workflow dependencies for drift detection.
+The taxonomy enforces the principle that validation approvals require prior inspection, and that safety halts override all other ongoing operations. The semantic graph captures these workflow dependencies for drift detection.
+
+Resource patterns are namespaced by domain (`construction:`) rather than by product, so the same mandates apply whichever BIM, scheduling, or site management platform a tenant runs.
+
+<!-- neutrality-allow-begin: migration note; a migration note has to name the identifier it replaces. -->
+
+## Migration: resource namespace in 2.0.0
+
+Resource patterns previously used a vendor namespace (`monco:project:...`). They now use the domain namespace `construction:project:...`, matching how the other taxonomies in this repository are structured (`ops:` for defence-ISR, for example).
+
+Only the templates in this package changed. Mandates already issued against `monco:` URIs keep verifying against those URIs, because verification compares the request resource with the resource recorded in the mandate — not with the taxonomy template. What changes is the output of anything that builds URIs *from* these templates, such as the action pickers in `@mandaitor/react`.
+
+If you operate mandates created from the 1.x templates, either reissue them against `construction:` URIs or keep the previous package version pinned until you do.
+
+<!-- neutrality-allow-end -->
 
 ## Notes
 
