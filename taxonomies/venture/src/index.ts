@@ -34,7 +34,10 @@ export const ventureTaxonomy: IndustryTaxonomy = {
     coreVersion: "0.3.0",
     tags: ["venture", "startup", "investment", "fundraising", "portfolio", "agentic-ai"],
     documentationUrl: "https://docs.mandaitor.io",
-    standardUrl: "https://southstarter.com",
+    // No standardUrl. Venture and early-stage investment workflows have no
+    // standards body comparable to ICAO for aviation or buildingSMART for
+    // construction, and the field is optional. Pointing it at a single firm
+    // would present that firm as the standard this taxonomy derives from.
   },
   actions: VENTURE_ACTIONS,
   resourcePatterns: VENTURE_RESOURCES,

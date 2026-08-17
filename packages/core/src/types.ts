@@ -35,7 +35,7 @@ export interface TaxonomyAction {
 export interface TaxonomyResourcePattern {
   /** Pattern name, e.g. "project-zone-trade" */
   name: string;
-  /** URI template with placeholders: "monco:project:{projectId}/zone:{zoneId}/*" */
+  /** URI template with placeholders: "construction:project:{projectId}/zone:{zoneId}/*" */
   pattern: string;
   /** Description of what this resource represents */
   description: string;

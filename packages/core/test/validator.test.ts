@@ -556,15 +556,15 @@ describe("matchResourcePattern", () => {
       // "doc:d1" is one segment containing a ':' — allowed.
       expect(
         matchResourcePattern(
-          "monco:project:{projectId}/zone:{zoneId}/trade:{tradeId}/*",
-          "monco:project:p1/zone:z1/trade:elektro/doc:d1",
+          "construction:project:{projectId}/zone:{zoneId}/trade:{tradeId}/*",
+          "construction:project:p1/zone:z1/trade:elektro/doc:d1",
         ),
       ).toBe(true);
       // One level deeper is rejected.
       expect(
         matchResourcePattern(
-          "monco:project:{projectId}/zone:{zoneId}/trade:{tradeId}/*",
-          "monco:project:p1/zone:z1/trade:elektro/sub/doc",
+          "construction:project:{projectId}/zone:{zoneId}/trade:{tradeId}/*",
+          "construction:project:p1/zone:z1/trade:elektro/sub/doc",
         ),
       ).toBe(false);
     });

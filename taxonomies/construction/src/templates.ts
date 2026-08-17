@@ -1,7 +1,10 @@
 // @mandaitor/taxonomy-construction — Mandate templates
 //
-// Pre-configured mandate templates for monco.ai construction workflows.
+// Pre-configured mandate templates for construction workflows.
 // Each template defines a ready-to-use delegation blueprint.
+//
+// Templates name the agent's role, not a specific product. The delegate is
+// whatever agent a tenant runs for that role.
 
 import type { TaxonomyMandateTemplate } from "@mandaitor/taxonomy-core";
 
@@ -10,7 +13,7 @@ export const CONSTRUCTION_TEMPLATES: TaxonomyMandateTemplate[] = [
     id: "construction.automated-validation",
     name: "Automated Plan Validation",
     description:
-      "Delegate BIM plan validation, issue flagging, and re-check requests to monco.ai's Validation Agent",
+      "Delegate BIM plan validation, issue flagging, and re-check requests to a plan validation agent",
     vertical: "construction",
     scope: {
       actions: [
@@ -42,7 +45,7 @@ export const CONSTRUCTION_TEMPLATES: TaxonomyMandateTemplate[] = [
     id: "construction.schedule-management",
     name: "AI Schedule Management",
     description:
-      "Delegate schedule updates and notifications to monco.ai's Scheduling Agent based on progress and weather data",
+      "Delegate schedule updates and notifications to a scheduling agent based on progress and weather data",
     vertical: "construction",
     scope: {
       actions: ["construction.scheduling.update", "construction.scheduling.notify"],
@@ -59,7 +62,7 @@ export const CONSTRUCTION_TEMPLATES: TaxonomyMandateTemplate[] = [
     id: "construction.procurement-automation",
     name: "Automated Procurement",
     description:
-      "Delegate material ordering and quote comparison to monco.ai's Procurement Agent within budget limits",
+      "Delegate material ordering and quote comparison to a procurement agent within budget limits",
     vertical: "construction",
     scope: {
       actions: [
@@ -86,7 +89,7 @@ export const CONSTRUCTION_TEMPLATES: TaxonomyMandateTemplate[] = [
     id: "construction.cost-management",
     name: "AI Cost Management",
     description:
-      "Delegate invoice approval and cost deviation monitoring to monco.ai's Finance Agent",
+      "Delegate invoice approval and cost deviation monitoring to a cost control agent",
     vertical: "construction",
     scope: {
       actions: ["construction.cost.approve_invoice", "construction.cost.flag_deviation"],
@@ -111,7 +114,7 @@ export const CONSTRUCTION_TEMPLATES: TaxonomyMandateTemplate[] = [
     id: "construction.documentation-handover",
     name: "Documentation & Handover",
     description:
-      "Delegate documentation generation and handover preparation to monco.ai's Documentation Agent",
+      "Delegate documentation generation and handover preparation to a documentation agent",
     vertical: "construction",
     scope: {
       actions: ["construction.documentation.generate", "construction.handover.prepare"],
@@ -128,7 +131,7 @@ export const CONSTRUCTION_TEMPLATES: TaxonomyMandateTemplate[] = [
     id: "construction.defect-detection",
     name: "Automated Defect Detection",
     description:
-      "Delegate defect report creation from 360° scan anomaly detection to monco.ai's Quality Agent",
+      "Delegate defect report creation from 360° scan anomaly detection to a quality assurance agent",
     vertical: "construction",
     scope: {
       actions: ["construction.defect.create"],

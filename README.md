@@ -9,7 +9,7 @@ A Mandaitor taxonomy is a structured definition of **what an AI agent is allowed
 | Building Block | Purpose | Example |
 |---|---|---|
 | **Actions** | Operations that can be delegated | `construction.validation.approve` |
-| **Resource Patterns** | URI templates scoping where actions apply | `monco:project:{projectId}/zone:{zoneId}/*` |
+| **Resource Patterns** | URI templates scoping where actions apply | `construction:project:{projectId}/zone:{zoneId}/*` |
 | **Constraint Templates** | Reusable boundary conditions such as time, budget, or rate limits | Invoice approval limit of EUR 5,000 |
 | **Mandate Templates** | Pre-built delegation blueprints combining the above | `construction.automated-plan-validation` |
 
