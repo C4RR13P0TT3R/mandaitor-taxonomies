@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.3](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/taxonomy-defence-isr-v1.2.2...taxonomy-defence-isr-v1.2.3) (2026-08-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @mandaitor/taxonomy-core bumped to 1.0.0
+
 ## [1.2.2](https://github.com/C4RR13P0TT3R/mandaitor-taxonomies/compare/taxonomy-defence-isr-v1.2.1...taxonomy-defence-isr-v1.2.2) (2026-08-06)
 
 

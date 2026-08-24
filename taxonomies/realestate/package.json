@@ -1,6 +1,6 @@
 {
   "name": "@mandaitor/taxonomy-realestate",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Real Estate & Property Management taxonomy for Mandaitor",
   "type": "module",
   "main": "dist/index.js",
