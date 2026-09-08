@@ -1,11 +1,11 @@
 {
-  "packages/core": "0.3.2",
-  "taxonomies/aviation": "0.3.2",
-  "taxonomies/construction": "1.2.2",
-  "taxonomies/defence-isr": "1.2.2",
-  "taxonomies/healthcare": "0.3.2",
-  "taxonomies/maritime": "0.3.2",
-  "taxonomies/realestate": "0.3.2",
-  "taxonomies/space": "0.3.2",
-  "taxonomies/venture": "0.3.2"
+  "packages/core": "1.0.0",
+  "taxonomies/aviation": "0.3.3",
+  "taxonomies/construction": "2.0.0",
+  "taxonomies/defence-isr": "1.2.3",
+  "taxonomies/healthcare": "0.3.3",
+  "taxonomies/maritime": "0.3.3",
+  "taxonomies/realestate": "0.3.3",
+  "taxonomies/space": "0.3.3",
+  "taxonomies/venture": "1.0.0"
 }
