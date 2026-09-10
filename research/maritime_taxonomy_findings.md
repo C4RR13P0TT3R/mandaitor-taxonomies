@@ -1,5 +1,13 @@
 # Maritime Taxonomy Candidate Findings
 
+> **Status: completed research, kept as reference.** The maritime taxonomy this
+> document selected shipped as `taxonomies/maritime` in May 2026. Nothing here
+> is outstanding work. It is kept because the selection criteria and the primary
+> sources are the template for choosing the next domain — start here rather than
+> from scratch. Delete it when a general "how we choose a taxonomy" note exists
+> that does not depend on the maritime example.
+
+
 ## Candidate recommendation
 
 Recommended second rehearsal taxonomy: **Maritime & Port Operations** with taxonomy ID `maritime`.
