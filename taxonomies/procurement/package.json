@@ -1,0 +1,48 @@
+{
+  "name": "@mandaitor/taxonomy-procurement",
+  "version": "0.1.0",
+  "description": "Procurement function taxonomy for Mandaitor: vendor-neutral business actions on procurement records, starting with releasing a purchase requisition",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "lint": "tsc --noEmit",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo"
+  },
+  "dependencies": {
+    "@mandaitor/taxonomy-core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  },
+  "keywords": [
+    "mandaitor",
+    "taxonomy",
+    "procurement",
+    "purchase-requisition",
+    "delegation",
+    "agentic-ai"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/C4RR13P0TT3R/mandaitor-taxonomies.git",
+    "directory": "taxonomies/procurement"
+  }
+}

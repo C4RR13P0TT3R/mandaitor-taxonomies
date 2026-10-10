@@ -101,6 +101,19 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3(vite@8.3.2)
 
+  taxonomies/procurement:
+    dependencies:
+      '@mandaitor/taxonomy-core':
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.3(vite@8.3.2)
+
   taxonomies/realestate:
     dependencies:
       '@mandaitor/taxonomy-core':

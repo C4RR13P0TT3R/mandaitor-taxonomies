@@ -53,8 +53,9 @@ test.
 ## This repository — mandaitor-taxonomies
 
 Eight industry taxonomy packages (aviation, construction, defence-isr,
-healthcare, maritime, realestate, space, venture) plus `@mandaitor/taxonomy-core`.
-Published to npm on release. `pnpm`, not `npm`.
+healthcare, maritime, realestate, space, venture), the `procurement` function
+taxonomy, and `@mandaitor/taxonomy-core`. Published to npm on release. `pnpm`,
+not `npm`.
 
 ```
 pnpm test        # builds taxonomy-core first, then runs every package

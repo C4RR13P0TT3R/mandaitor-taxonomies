@@ -27,6 +27,10 @@
     "taxonomies/maritime": {
       "component": "taxonomy-maritime"
     },
+    "taxonomies/procurement": {
+      "component": "taxonomy-procurement",
+      "initial-version": "0.1.0"
+    },
     "taxonomies/realestate": {
       "component": "taxonomy-realestate"
     },
