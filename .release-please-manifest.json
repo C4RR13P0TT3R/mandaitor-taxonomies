@@ -7,5 +7,6 @@
   "taxonomies/maritime": "0.3.3",
   "taxonomies/realestate": "0.3.3",
   "taxonomies/space": "0.3.3",
-  "taxonomies/venture": "1.0.0"
+  "taxonomies/venture": "1.0.0",
+  "taxonomies/procurement": "0.1.0"
 }
